@@ -136,7 +136,7 @@ start index.html
 Or drag and drop the `index.html` file into your browser.
 
 ### Live Demo
-Visit the live application at: [Your deployment URL here]
+🌐 **[Try it now: Pizza Dough Generator](https://jacopofornesi.co.uk/pizza-dough-generator/)**
 
 ## 🎯 How to Use
 

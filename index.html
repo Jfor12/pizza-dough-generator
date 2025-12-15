@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Create the perfect pizza dough recipe tailored to your needs. Generate custom recipes for Neapolitan, New York, and Detroit style pizzas.">
+    <meta name="author" content="Jacopo Fornesei">
+    <title>Pizza Dough Generator | Perfect Homemade Pizza</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Light Mode - Classic Italian */
+            --bg-primary: #FDFDFB;
+            --bg-secondary: #FFFFFF;
+            --bg-card: #FFFFFF;
+            --bg-accent: #F8F6F3;
+            --text-primary: #2C2416;
+            --text-secondary: #5A4E3A;
+            --text-muted: #8B7D6B;
+            --border-color: #E5E1D8;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --accent-primary: #C8432D;
+            --accent-hover: #A03424;
+            --accent-light: #F9EBE8;
+            --success-color: #4A7C2C;
+            --success-bg: #EDF5E8;
+            --italian-red: #C8432D;
+            --italian-green: #4A7C2C;
+            --italian-cream: #F8F6F3;
+        }
+        
+        .dark {
+            /* Dark Mode - Classic Italian Evening */
+            --bg-primary: #1C1812;
+            --bg-secondary: #2A2419;
+            --bg-card: #322B1F;
+            --bg-accent: #3A3326;
+            --text-primary: #F5F2EC;
+            --text-secondary: #D4CFBF;
+            --text-muted: #A39782;
+            --border-color: #4A4235;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --accent-primary: #E05A42;
+            --accent-hover: #F27059;
+            --accent-light: #3D2B24;
+            --success-color: #6B9B4A;
+            --success-bg: #2A3820;
+            --italian-red: #E05A42;
+            --italian-green: #6B9B4A;
+            --italian-cream: #3A3326;
+        }
+        
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 0.5rem;
+            }
+        }
+        
+        .title-font {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .glass-effect {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px var(--shadow-color);
+        }
+        
+        .dark .glass-effect {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+        }
+        
+        /* Professional Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        
+        /* Stagger animation delays */
+        .stagger-1 { animation-delay: 0.1s; opacity: 0; }
+        .stagger-2 { animation-delay: 0.2s; opacity: 0; }
+        .stagger-3 { animation-delay: 0.3s; opacity: 0; }
+        .stagger-4 { animation-delay: 0.4s; opacity: 0; }
+        .stagger-5 { animation-delay: 0.5s; opacity: 0; }
+        .stagger-6 { animation-delay: 0.6s; opacity: 0; }
+        
+        .custom-radio-label {
+            transition: border-color 0.2s ease;
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .custom-radio-label:hover {
+            border-color: var(--accent-primary);
+        }
+        
+        .custom-radio:checked + .custom-radio-label {
+            border-color: var(--accent-primary);
+            background: var(--accent-light);
+            color: var(--accent-primary);
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .custom-radio-label {
+                padding: 0.75rem !important;
+            }
+        }
+        
+        .recipe-card {
+            transition: opacity 0.3s ease, max-height 0.3s ease;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+        }
+        
+        .recipe-card.show {
+            max-height: 5000px;
+            opacity: 1;
+        }
+        
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        input[type=number] {
+            -moz-appearance: textfield;
+            appearance: textfield;
+            background-color: transparent;
+            color: var(--text-primary);
+        }
+        
+        .accordion-header {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .accordion-header:hover {
+            background-color: var(--accent-light);
+        }
+        
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        input[type=range] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        input[type=range]:focus {
+            outline: none;
+        }
+        
+        input[type=range]::-webkit-slider-runnable-track {
+            background: var(--success-bg);
+            height: 0.5rem;
+            border-radius: 0.5rem;
+        }
+        
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            margin-top: -0.25rem;
+            background-color: var(--success-color);
+            height: 1rem;
+            width: 1rem;
+            border-radius: 50%;
+            border: 2px solid var(--bg-card);
+            box-shadow: 0 2px 8px rgba(5, 150, 105, 0.4);
+        }
+        
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 50;
+            background: var(--accent-primary);
+            border: none;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            transition: opacity 0.2s ease;
+        }
+        
+        .theme-toggle:hover {
+            opacity: 0.9;
+        }
+        
+        .theme-toggle svg {
+            color: white;
+        }
+        
+        @media (max-width: 768px) {
+            .theme-toggle {
+                top: 0.75rem;
+                right: 0.75rem;
+                padding: 0.625rem !important;
+            }
+            
+            .theme-toggle svg {
+                width: 1.25rem !important;
+                height: 1.25rem !important;
+            }
+        }
+        
+
+        
+        .pizza-icon-glow {
+            filter: drop-shadow(0 0 12px var(--accent-primary));
+        }
+        
+        .signature {
+            background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+            border-top: 2px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+        
+        .signature a {
+            color: var(--accent-primary);
+            transition: all 0.2s ease;
+            display: inline-flex;
+        }
+        
+        .signature a:hover {
+            color: var(--accent-hover);
+            transform: translateY(-2px);
+        }
+        
+        .gradient-text {
+            color: var(--terracotta);
+        }
+        
+        /* Button Enhancements */
+        .btn-primary {
+            background: var(--accent-primary);
+            transition: opacity 0.2s ease;
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+        
+        /* Counter Buttons */
+        .counter-btn {
+            transition: opacity 0.15s ease;
+        }
+        
+        .counter-btn:hover {
+            opacity: 0.8;
+            background-color: var(--accent-light) !important;
+        }
+        
+        .counter-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Mobile Touch Optimization */
+        @media (hover: none) and (pointer: coarse) {
+
+        }
+        
+        /* Print Styles */
+        @media print {
+            @page {
+                margin: 1cm;
+                size: A4;
+            }
+            
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color: #000 !important;
+            }
+            
+            body {
+                background: white !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            
+            body *, body *::before, body *::after {
+                visibility: visible !important;
+                color: #000 !important;
+            }
+            
+            main {
+                display: block !important;
+                visibility: visible !important;
+                box-shadow: none !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 20px !important;
+                background: white !important;
+            }
+            
+            /* Hide everything except recipe output */
+            main > *:not(#recipe-output) {
+                display: none !important;
+            }
+            
+            #recipe-output {
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                border: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                background: white !important;
+            }
+            
+            #recipe-card {
+                display: block !important;
+                visibility: visible !important;
+                max-height: none !important;
+                opacity: 1 !important;
+                transform: none !important;
+                box-shadow: none !important;
+                border: 2px solid #000 !important;
+                background: white !important;
+                padding: 20px !important;
+            }
+            
+            .recipe-card {
+                display: block !important;
+                visibility: visible !important;
+                max-height: none !important;
+                opacity: 1 !important;
+                transform: none !important;
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+                background: white !important;
+            }
+            
+            .no-print, .theme-toggle, button, input, textarea, footer, nav, header {
+                display: none !important;
+            }
+            
+            h1, h2, h3, h4, h5, h6 {
+                color: #000 !important;
+                background: transparent !important;
+                page-break-after: avoid;
+                display: block !important;
+                visibility: visible !important;
+            }
+            
+            p, li, span, strong, div, ul, ol {
+                color: #000 !important;
+                background: transparent !important;
+                display: block !important;
+                visibility: visible !important;
+            }
+            
+            span {
+                display: inline !important;
+            }
+            
+            .instruction-step {
+                display: block !important;
+                visibility: visible !important;
+                border-left: 3px solid #000 !important;
+                background: #f9f9f9 !important;
+                page-break-inside: avoid;
+                margin-bottom: 15px !important;
+                padding: 15px !important;
+            }
+            
+            .baker-percent {
+                display: inline !important;
+                visibility: visible !important;
+                color: #000 !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    
+    <!-- Theme Toggle Button -->
+    <button id="theme-toggle" class="theme-toggle rounded-full p-3 transition-colors no-print" aria-label="Toggle theme">
+        <svg id="sun-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        <svg id="moon-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+    </button>
+
+    <main class="w-full max-w-6xl mx-auto animate-scale-in">
+        <div class="text-centre p-6 sm:p-8 md:p-10 py-12">
+            <div class="inline-block">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4" style="color: var(--accent-primary);" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C8.43 2 5.23 4.42 4.28 7.71L12 22l7.72-14.29C18.77 4.42 15.57 2 12 2zM7 9a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm5 5a2 2 0 1 1 0-4 2 2 0 0 1 0 4zm5-3a2 2 0 1 1 0-4 2 2 0 0 1 0 4z"/>
+                </svg>
+            </div>
+            <h1 class="title-font text-3xl sm:text-4xl md:text-5xl font-black gradient-text mb-3">
+                Pizza Dough Generator
+            </h1>
+            <p class="text-base sm:text-lg" style="color: var(--text-muted);">Create the perfect pizza dough recipe tailored to your needs.</p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="flex gap-3 px-4 sm:px-6 md:px-8 mb-4 no-print">
+            <button id="tab-generator" class="tab-btn flex-1 py-3 px-4 rounded-lg font-semibold transition-all" style="background-color: var(--success-color); color: white;">
+                🍕 Recipe Generator
+            </button>
+            <button id="tab-tools" class="tab-btn flex-1 py-3 px-4 rounded-lg font-semibold transition-all" style="background-color: var(--bg-accent); color: var(--text-secondary);">
+                💾 Saved Recipes & Timer
+            </button>
+        </div>
+
+        <div class="p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 no-print" id="generator-section">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                <div class="animate-fade-in stagger-1">
+                    <h2 class="text-base sm:text-lg font-semibold mb-1" style="color: var(--text-primary);">1. Select Pizza Style</h2>
+                    <p class="text-xs sm:text-sm mb-3" style="color: var(--text-muted);">Sets the ideal starting hydration.</p>
+                    <div class="space-y-3">
+                        <div>
+                            <input type="radio" name="style" value="neapolitan" id="s-neapolitan" class="hidden custom-radio" checked>
+                            <label for="s-neapolitan" class="flex items-centre cursor-pointer p-3 border border-slate-200 rounded-lg custom-radio-label">
+                                <div>
+                                    <span class="font-bold">Neapolitan</span>
+                                    <span class="block text-xs mt-1">Soft, light, and airy.</span>
+                                </div>
+                            </label>
+                        </div>
+                        <div>
+                            <input type="radio" name="style" value="ny" id="s-ny" class="hidden custom-radio">
+                            <label for="s-ny" class="flex items-centre cursor-pointer p-3 border border-slate-200 rounded-lg custom-radio-label">
+                                <div>
+                                    <span class="font-bold">New York Style</span>
+                                    <span class="block text-xs mt-1">Crisp, foldable, and chewy.</span>
+                                </div>
+                            </label>
+                        </div>
+                        <div>
+                            <input type="radio" name="style" value="detroit" id="s-detroit" class="hidden custom-radio">
+                            <label for="s-detroit" class="flex items-centre cursor-pointer p-3 border border-slate-200 rounded-lg custom-radio-label">
+                                <div>
+                                    <span class="font-bold">Detroit Style</span>
+                                    <span class="block text-xs mt-1">Thick, focaccia-like crust.</span>
+                                </div>
+                            </label>
+                        </div>
+                        <div>
+                            <input type="radio" name="style" value="roman" id="s-roman" class="hidden custom-radio">
+                            <label for="s-roman" class="flex items-centre cursor-pointer p-3 border border-slate-200 rounded-lg custom-radio-label">
+                                <div>
+                                    <span class="font-bold">Roman/Pinsa Style</span>
+                                    <span class="block text-xs mt-1">For 40x30cm (16x12 inch) tray. Light, crispy, airy.</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="animate-fade-in stagger-2">
+                    <h2 class="text-base sm:text-lg font-semibold mb-1" style="color: var(--text-primary);">2. How many pizzas?</h2>
+                    <p class="text-xs sm:text-sm mb-3" style="color: var(--text-muted);" id="pizza-count-desc">Each makes a 25-30cm (10-12 inch) pizza.</p>
+                    <div class="flex items-centre justify-centre rounded-lg p-2 sm:p-3" style="border: 2px solid var(--border-color); background-color: var(--bg-card);">
+                        <button id="minus-btn" class="counter-btn font-bold text-2xl sm:text-3xl h-10 w-10 sm:h-12 sm:w-12 rounded-md" style="color: var(--accent-primary);">-</button>
+                        <input type="number" id="pizza-count" value="2" min="1" max="12" class="text-centre font-bold text-2xl sm:text-3xl w-16 sm:w-20 border-none focus:ring-0 bg-transparent" style="color: var(--text-primary);">
+                        <button id="plus-btn" class="counter-btn font-bold text-2xl sm:text-3xl h-10 w-10 sm:h-12 sm:w-12 rounded-md" style="color: var(--accent-primary);">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="animate-fade-in stagger-3">
+                <h2 class="text-base sm:text-lg font-semibold mb-1" style="color: var(--text-primary);">3. Adjust Hydration (Optional)</h2>
+                <div class="flex justify-between items-centre mb-2">
+                    <p class="text-xs sm:text-sm" style="color: var(--text-muted);">Fine-tune the water content.</p>
+                    <span id="hydration-value" class="font-bold text-base sm:text-lg" style="color: var(--success-color);">68%</span>
+                </div>
+                <input type="range" id="hydration-slider" min="55" max="80" value="68" class="w-full h-2">
+                <p id="hydration-warning" class="text-centre text-xs sm:text-sm mt-2 h-4 sm:h-5" style="color: var(--text-secondary);"></p>
+            </div>
+
+            <!-- Advanced Options -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="text-sm font-semibold mb-2 block" style="color: var(--text-primary);">🌡️ Room Temperature (Optional)</label>
+                    <input type="number" id="room-temp" placeholder="e.g., 22" min="15" max="30" class="w-full p-2 rounded-lg text-sm" style="border: 1px solid var(--border-color); background-color: var(--bg-card); color: var(--text-primary);">
+                    <p class="text-xs mt-1" style="color: var(--text-muted);">Adjusts yeast and timing (°C)</p>
+                </div>
+                <div>
+                    <label class="text-sm font-semibold mb-2 block" style="color: var(--text-primary);">🧪 Poolish/Preferment</label>
+                    <label class="flex items-centre cursor-pointer">
+                        <input type="checkbox" id="use-preferment" class="mr-2 w-4 h-4">
+                        <span class="text-sm" style="color: var(--text-primary);">Use Poolish/Preferment</span>
+                    </label>
+                    <p class="text-xs mt-1" style="color: var(--text-muted);">Creates 30% poolish for enhanced flavour and texture.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+                <div class="animate-fade-in stagger-4">
+                    <h2 class="text-base sm:text-lg font-semibold mb-1" style="color: var(--text-primary);">4. Select Oven Type</h2>
+                    <p class="text-xs sm:text-sm mb-3" style="color: var(--text-muted);">This changes the baking instructions.</p>
+                    <div class="grid grid-cols-1 gap-3">
+                        <div>
+                            <input type="radio" name="oven" value="home" id="o-home" class="hidden custom-radio" checked>
+                            <label for="o-home" class="block cursor-pointer text-centre p-3 border border-slate-200 rounded-lg custom-radio-label">Home Oven (500°F / 260°C)</label>
+                        </div>
+                        <div>
+                            <input type="radio" name="oven" value="pizza" id="o-pizza" class="hidden custom-radio">
+                            <label for="o-pizza" class="block cursor-pointer text-centre p-3 border border-slate-200 rounded-lg custom-radio-label">Pizza Oven (850°F / 450°C)</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="animate-fade-in stagger-5">
+                    <h2 class="text-base sm:text-lg font-semibold mb-1" style="color: var(--text-primary);">5. Select Fermentation Time</h2>
+                    <p class="text-xs sm:text-sm mb-3" style="color: var(--text-muted);">Longer fermentation develops complex flavour.</p>
+                    <div class="grid grid-cols-1 gap-3">
+                        <div>
+                            <input type="radio" name="time" value="quick" id="t-quick" class="hidden custom-radio" checked>
+                            <label for="t-quick" class="block cursor-pointer text-centre p-3 border border-slate-200 rounded-lg custom-radio-label">Quick (2-4 Hours)</label>
+                        </div>
+                        <div>
+                            <input type="radio" name="time" value="overnight" id="t-overnight" class="hidden custom-radio">
+                            <label for="t-overnight" class="block cursor-pointer text-centre p-3 border border-slate-200 rounded-lg custom-radio-label">Overnight (12-24 Hours)</label>
+                        </div>
+                        <div>
+                            <input type="radio" name="time" value="long" id="t-long" class="hidden custom-radio">
+                            <label for="t-long" class="block cursor-pointer text-centre p-3 border border-slate-200 rounded-lg custom-radio-label">Long (2-3 Days)</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-6 animate-fade-in stagger-6" style="border-top: 1px solid var(--border-color);">
+                <h3 class="text-lg sm:text-xl font-bold mb-4 text-centre" style="color: var(--success-color);">📚 Resources & Tips</h3>
+                <div class="space-y-3">
+                    <div class="rounded-lg" style="border: 1px solid var(--border-color); background-color: var(--bg-card);">
+                        <div class="accordion-header p-4 flex justify-between items-centre rounded-lg">
+                            <h4 class="font-semibold" style="color: var(--text-primary);">🔄 Ingredient Substitutions</h4>
+                            <span class="font-bold text-xl" style="color: var(--success-color);">+</span>
+                        </div>
+                        <div class="accordion-content text-sm" style="color: var(--text-secondary);">
+                            <div class="p-4" style="border-top: 1px solid var(--border-color);">
+                                <p><strong>'00' Flour:</strong> Use bread flour (12-13% protein). Results will be slightly less tender but still excellent.</p>
+                                <p class="mt-2"><strong>Instant Yeast:</strong> Can substitute active dry yeast 1:1, but dissolve in warm water first for 5 minutes.</p>
+                                <p class="mt-2"><strong>Fine Sea Salt:</strong> Use table salt but reduce by 10-15% (it's denser). Kosher salt: increase by 25%.</p>
+                                <p class="mt-2"><strong>No Scale?</strong> 1 cup flour ≈ 125g, 1 cup water ≈ 240g. But seriously, get a scale for best results!</p>
+                                <p class="mt-2"><strong>Fresh Yeast:</strong> Multiply instant yeast amount by 3 (fresh yeast has more moisture).</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rounded-lg" style="border: 1px solid var(--border-color); background-color: var(--bg-card);">
+                        <div class="accordion-header p-4 flex justify-between items-centre rounded-lg">
+                            <h4 class="font-semibold" style="color: var(--text-primary);">💡 Troubleshooting Tips</h4>
+                            <span class="font-bold text-xl" style="color: var(--success-color);">+</span>
+                        </div>
+                        <div class="accordion-content text-sm" style="color: var(--text-secondary);">
+                            <div class="p-4" style="border-top: 1px solid var(--border-color);">
+                                <p><strong>Dough is too sticky:</strong> Don't add too much flour! Use a bench scraper and wet hands. A little extra kneading or a few more stretch-and-folds will also help build strength.</p>
+                                <p class="mt-2"><strong>Dough isn't rising:</strong> Your yeast might be old, or the room could be too cold. Move the dough to a warmer spot. Make sure your water wasn't too hot, as that can kill the yeast.</p>
+                                <p class="mt-2"><strong>Crust is dense, not airy:</strong> You may have overworked the dough during kneading or knocked out all the air when stretching it. Be gentle in the final stages!</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rounded-lg" style="border: 1px solid var(--border-color); background-color: var(--bg-card);">
+                        <div class="accordion-header p-4 flex justify-between items-centre rounded-lg">
+                            <h4 class="font-semibold" style="color: var(--text-primary);">🙌 Dough Handling Guide</h4>
+                            <span class="font-bold text-xl" style="color: var(--success-color);">+</span>
+                        </div>
+                        <div class="accordion-content text-sm" style="color: var(--text-secondary);">
+                            <div class="p-4" style="border-top: 1px solid var(--border-color);">
+                                <p><strong>1. Be Gentle:</strong> Your dough is full of gas from fermentation. The goal is to shape it without losing all those precious air bubbles.</p>
+                                <p class="mt-2"><strong>2. Use Your Fingertips:</strong> Press down in the centre of the dough ball, leaving a 1-inch border untouched. This border will become the crust (cornicione).</p>
+                                <p class="mt-2"><strong>3. The "Steering Wheel":</strong> Gently drape the dough over your knuckles and rotate it like a steering wheel, letting gravity do the stretching. Avoid pulling or tearing.</p>
+                                <p class="mt-2"><strong>4. No Rolling Pins!</strong> A rolling pin will crush all the air pockets, resulting in a flat, dense crust.</p>
+                                <p class="mt-2"><strong>5. Room Temperature:</strong> Let the dough balls warm up for 30-60 minutes at room temperature before stretching for easier handling.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="rounded-lg" style="border: 1px solid var(--border-color); background-color: var(--bg-card);">
+                        <div class="accordion-header p-4 flex justify-between items-centre rounded-lg">
+                            <h4 class="font-semibold" style="color: var(--text-primary);">📖 Glossary of Terms</h4>
+                            <span class="font-bold text-xl" style="color: var(--success-color);">+</span>
+                        </div>
+                        <div class="accordion-content text-sm" style="color: var(--text-secondary);">
+                            <div class="p-4" style="border-top: 1px solid var(--border-color);">
+                                <p><strong>"00" Flour:</strong> A finely milled Italian flour that creates a soft, tender crust. Bread flour is a great substitute.</p>
+                                <p class="mt-2"><strong>Hydration:</strong> The ratio of water to flour by weight. Higher hydration = stickier dough and airier crust.</p>
+                                <p class="mt-2"><strong>Poolish:</strong> A liquid preferment made with equal parts flour and water (100% hydration) plus a small amount of yeast. Fermented for 12-16 hours to develop flavour and improve dough structure.</p>
+                                <p class="mt-2"><strong>Preferment:</strong> A portion of dough made ahead and allowed to ferment before being added to the final dough. Examples include poolish, biga, and sourdough starter. Adds complex flavours and improves texture.</p>
+                                <p class="mt-2"><strong>Bulk Fermentation:</strong> The first rise of the dough after mixing and kneading.</p>
+                                <p class="mt-2"><strong>Proofing:</strong> The final rise of the dough after it has been shaped into balls.</p>
+                                <p class="mt-2"><strong>Cornicione:</strong> The Italian term for the crust or the puffy outer rim of the pizza.</p>
+                                <p class="mt-2"><strong>Windowpane Test:</strong> Stretching a small piece of dough to check if gluten is properly developed - it should be thin enough to see light through without tearing.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="generate-btn" class="btn-primary w-full text-white font-bold py-3 sm:py-4 px-4 rounded-xl text-base sm:text-lg focus:outline-none focus:ring-4 flex items-centre justify-centre gap-x-2 shadow-lg" style="box-shadow: 0 4px 20px rgba(233, 115, 48, 0.4);">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                <span>Generate My Recipe</span>
+            </button>
+        </div>
+
+        <div id="recipe-output" class="mt-8 pt-6 p-6 sm:p-8" style="border-top: 2px dashed var(--border-color);">
+            <div id="recipe-card" class="recipe-card p-6 rounded-xl shadow-md" style="background-color: var(--success-bg); border: 1px solid var(--success-color);">
+                </div>
+        </div>
+        
+        <!-- Tools Section (Hidden by default) -->
+        <div id="tools-section" class="p-4 sm:p-6 md:p-8 space-y-6" style="display: none;">
+            <h2 class="text-xl sm:text-2xl font-bold text-centre mb-6" style="color: var(--success-color);">🛠️ Tools & Utilities</h2>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Fermentation Timer -->
+                <div class="p-6 rounded-xl shadow-md" style="border: 1px solid var(--border-color); background-color: var(--bg-card);">
+                    <h3 class="font-semibold text-xl mb-4" style="color: var(--text-primary);">⏰ Fermentation Timer</h3>
+                    <div id="timer-display" class="font-mono text-4xl font-bold mb-6 text-centre" style="color: var(--success-color);">00:00:00</div>
+                    
+                    <!-- Quick presets -->
+                    <div class="mb-4">
+                        <p class="text-sm font-semibold mb-2" style="color: var(--text-primary);">Quick Start:</p>
+                        <div class="flex flex-wrap gap-2 justify-centre">
+                            <button onclick="startTimer(120)" class="px-4 py-2 text-sm rounded-lg font-semibold transition-colors" style="background-color: var(--italian-green); color: white;">2 Hours</button>
+                            <button onclick="startTimer(720)" class="px-4 py-2 text-sm rounded-lg font-semibold transition-colors" style="background-color: var(--italian-green); color: white;">12 Hours</button>
+                            <button onclick="startTimer(1440)" class="px-4 py-2 text-sm rounded-lg font-semibold transition-colors" style="background-color: var(--italian-green); color: white;">24 Hours</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Custom time input -->
+                    <div class="mb-4 p-4 rounded-lg" style="background-color: var(--bg-primary); border: 1px solid var(--border-color);">
+                        <p class="text-sm font-semibold mb-2" style="color: var(--text-primary);">Custom Time:</p>
+                        <div class="flex flex-wrap gap-2 items-end">
+                            <div class="flex-1 min-w-[100px]">
+                                <label class="text-xs mb-1 block" style="color: var(--text-muted);">Hours</label>
+                                <input type="number" id="custom-hours" min="0" max="72" value="0" class="w-full p-2 rounded-lg text-sm" style="border: 1px solid var(--border-color); background-color: var(--bg-card); color: var(--text-primary);">
+                            </div>
+                            <div class="flex-1 min-w-[100px]">
+                                <label class="text-xs mb-1 block" style="color: var(--text-muted);">Minutes</label>
+                                <input type="number" id="custom-minutes" min="0" max="59" value="30" class="w-full p-2 rounded-lg text-sm" style="border: 1px solid var(--border-color); background-color: var(--bg-card); color: var(--text-primary);">
+                            </div>
+                            <button onclick="startCustomTimer()" class="px-4 py-2 text-sm rounded-lg font-semibold transition-colors" style="background-color: var(--italian-green); color: white;">Start</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Control buttons -->
+                    <div class="flex flex-wrap gap-2 justify-centre">
+                        <button onclick="stopTimer()" class="px-4 py-2 text-sm rounded-lg font-semibold transition-colors" style="background-color: var(--accent-primary); color: white;">Stop Timer</button>
+                        <button onclick="requestNotificationPermission()" class="px-4 py-2 text-sm rounded-lg transition-colors" style="border: 1px solid var(--border-color); color: var(--text-secondary); background-color: var(--bg-card);">🔔 Enable Notifications</button>
+                    </div>
+                </div>
+
+                <!-- Saved Recipes -->
+                <div class="p-6 rounded-xl shadow-md" style="border: 1px solid var(--border-color); background-color: var(--bg-card);">
+                    <h3 class="font-semibold text-xl mb-4" style="color: var(--text-primary);">💾 Saved Recipes (Max 10)</h3>
+                    <div id="favorites-list" class="space-y-2 max-h-96 overflow-y-auto">
+                        <p class="text-sm" style="color: var(--text-muted);">No saved recipes yet.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Signature -->
+        <footer class="signature py-4 sm:py-6 px-4 sm:px-8 text-centre no-print">
+            <p class="text-xs sm:text-sm mb-2">Crafted with ❤️ by <span class="font-semibold">Jacopo Fornesi</span></p>
+            <div class="flex items-centre justify-centre gap-4 sm:gap-6 flex-wrap">
+                <a href="https://www.linkedin.com/in/jacopofornesi" target="_blank" rel="noopener noreferrer" class="inline-flex items-centre gap-2 font-medium hover:underline">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                    LinkedIn
+                </a>
+                <a href="https://github.com/Jfor12" target="_blank" rel="noopener noreferrer" class="inline-flex items-centre gap-2 font-medium hover:underline">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    GitHub
+                </a>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        // --- DOM Elements ---
+        const generateBtn = document.getElementById('generate-btn');
+        const recipeOutputCard = document.getElementById('recipe-card');
+        const pizzaCountInput = document.getElementById('pizza-count');
+        const plusBtn = document.getElementById('plus-btn');
+        const minusBtn = document.getElementById('minus-btn');
+        const hydrationSlider = document.getElementById('hydration-slider');
+        const hydrationValue = document.getElementById('hydration-value');
+        const hydrationWarning = document.getElementById('hydration-warning');
+        const styleRadios = document.querySelectorAll('input[name="style"]');
+        const themeToggle = document.getElementById('theme-toggle');
+        const sunIcon = document.getElementById('sun-icon');
+        const moonIcon = document.getElementById('moon-icon');
+
+        // --- Data ---
+        const styleData = {
+            neapolitan: { hydration: 68, flourPerPizza: 155, saltPercent: 2.8 },
+            ny: { hydration: 62, flourPerPizza: 170, saltPercent: 2.5 },
+            detroit: { hydration: 72, flourPerPizza: 180, saltPercent: 2.2 },
+            roman: { hydration: 80, flourPerPizza: 333, saltPercent: 2.5 }
+        };
+
+        // --- Event Listeners ---
+        generateBtn.addEventListener('click', generateRecipe);
+        plusBtn.addEventListener('click', () => updateCount(1));
+        minusBtn.addEventListener('click', () => updateCount(-1));
+        hydrationSlider.addEventListener('input', updateHydrationUI);
+        styleRadios.forEach(radio => radio.addEventListener('change', handleStyleChange));
+        themeToggle.addEventListener('click', toggleTheme);
+        
+        // Tab navigation
+        document.getElementById('tab-generator').addEventListener('click', () => switchTab('generator'));
+        document.getElementById('tab-tools').addEventListener('click', () => switchTab('tools'));
+        
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const content = header.nextElementSibling;
+                const icon = header.querySelector('span');
+                if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+                    content.style.maxHeight = null;
+                    icon.style.transform = 'rotate(0deg)';
+                } else {
+                    // Use a large value to ensure all content is visible
+                    content.style.maxHeight = (content.scrollHeight + 50) + "px";
+                    icon.style.transform = 'rotate(45deg)';
+                }
+            });
+        });
+
+        // --- Timer Variables & Functions (must be before initialization) ---
+        let timerInterval = null;
+        let timerEndTime = null;
+
+        window.startTimer = function(minutes) {
+            console.log('startTimer called with', minutes, 'minutes');
+            if (timerInterval) clearInterval(timerInterval);
+            
+            timerEndTime = Date.now() + (minutes * 60 * 1000);
+            localStorage.setItem('timerEndTime', timerEndTime);
+            console.log('Timer end time set to:', new Date(timerEndTime));
+            updateTimerDisplay();
+            
+            timerInterval = setInterval(() => {
+                updateTimerDisplay();
+                
+                if (Date.now() >= timerEndTime) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    timerEndTime = null;
+                    localStorage.removeItem('timerEndTime');
+                    if ('Notification' in window && Notification.permission === 'granted') {
+                        new Notification('Pizza Dough Timer', {
+                            body: 'Your dough is ready!',
+                            icon: '/favicon.ico'
+                        });
+                    }
+                    alert('⏰ Timer Complete! Your dough is ready.');
+                }
+            }, 1000);
+        }
+        
+        window.startCustomTimer = function() {
+            const hours = parseInt(document.getElementById('custom-hours').value) || 0;
+            const minutes = parseInt(document.getElementById('custom-minutes').value) || 0;
+            const totalMinutes = (hours * 60) + minutes;
+            
+            if (totalMinutes <= 0) {
+                alert('Please enter a valid time (at least 1 minute)');
+                return;
+            }
+            
+            if (totalMinutes > 4320) { // 72 hours max
+                alert('Maximum timer duration is 72 hours');
+                return;
+            }
+            
+            startTimer(totalMinutes);
+        }
+
+        function updateTimerDisplay() {
+            const display = document.getElementById('timer-display');
+            if (!display) {
+                console.error('Timer display element not found!');
+                return;
+            }
+            if (!timerEndTime) {
+                console.log('No timer end time set');
+                return;
+            }
+            
+            const remaining = Math.max(0, timerEndTime - Date.now());
+            const hours = Math.floor(remaining / (60 * 60 * 1000));
+            const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+            const seconds = Math.floor((remaining % (60 * 1000)) / 1000);
+            
+            display.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        window.stopTimer = function() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                timerEndTime = null;
+                localStorage.removeItem('timerEndTime');
+                const display = document.getElementById('timer-display');
+                if (display) display.textContent = '00:00:00';
+            }
+        }
+
+        window.requestNotificationPermission = function() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        }
+        
+        function restoreTimer() {
+            const savedEndTime = localStorage.getItem('timerEndTime');
+            if (!savedEndTime) return;
+            
+            const endTime = parseInt(savedEndTime);
+            const remaining = endTime - Date.now();
+            
+            if (remaining <= 0) {
+                // Timer has already finished
+                localStorage.removeItem('timerEndTime');
+                const display = document.getElementById('timer-display');
+                if (display) display.textContent = '00:00:00';
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification('Pizza Dough Timer', {
+                        body: 'Your dough is ready!',
+                        icon: '/favicon.ico'
+                    });
+                }
+                return;
+            }
+            
+            // Resume the timer
+            timerEndTime = endTime;
+            updateTimerDisplay();
+            
+            timerInterval = setInterval(() => {
+                updateTimerDisplay();
+                
+                if (Date.now() >= timerEndTime) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    timerEndTime = null;
+                    localStorage.removeItem('timerEndTime');
+                    if ('Notification' in window && Notification.permission === 'granted') {
+                        new Notification('Pizza Dough Timer', {
+                            body: 'Your dough is ready!',
+                            icon: '/favicon.ico'
+                        });
+                    }
+                    alert('⏰ Timer Complete! Your dough is ready.');
+                }
+            }, 1000);
+        }
+
+        // --- Initial Setup ---
+        initTheme();
+        updateHydrationUI();
+        updateFavoritesList();
+        restoreTimer();
+
+        // --- Functions ---
+        function switchTab(tab) {
+            const generatorSection = document.getElementById('generator-section');
+            const toolsSection = document.getElementById('tools-section');
+            const recipeOutput = document.getElementById('recipe-output');
+            const tabGenerator = document.getElementById('tab-generator');
+            const tabTools = document.getElementById('tab-tools');
+            
+            if (tab === 'generator') {
+                generatorSection.style.display = 'block';
+                toolsSection.style.display = 'none';
+                recipeOutput.style.display = 'block';
+                tabGenerator.style.backgroundColor = 'var(--success-color)';
+                tabGenerator.style.color = 'white';
+                tabTools.style.backgroundColor = 'var(--bg-accent)';
+                tabTools.style.color = 'var(--text-secondary)';
+            } else {
+                generatorSection.style.display = 'none';
+                toolsSection.style.display = 'block';
+                recipeOutput.style.display = 'none';
+                tabTools.style.backgroundColor = 'var(--success-color)';
+                tabTools.style.color = 'white';
+                tabGenerator.style.backgroundColor = 'var(--bg-accent)';
+                tabGenerator.style.color = 'var(--text-secondary)';
+            }
+        }
+        
+        function switchTab(tab) {
+            const generatorSection = document.getElementById('generator-section');
+            const toolsSection = document.getElementById('tools-section');
+            const recipeOutput = document.getElementById('recipe-output');
+            const tabGenerator = document.getElementById('tab-generator');
+            const tabTools = document.getElementById('tab-tools');
+            
+            if (tab === 'generator') {
+                generatorSection.style.display = 'block';
+                toolsSection.style.display = 'none';
+                recipeOutput.style.display = 'block';
+                tabGenerator.style.backgroundColor = 'var(--success-color)';
+                tabGenerator.style.color = 'white';
+                tabTools.style.backgroundColor = 'var(--bg-accent)';
+                tabTools.style.color = 'var(--text-secondary)';
+            } else {
+                generatorSection.style.display = 'none';
+                toolsSection.style.display = 'block';
+                recipeOutput.style.display = 'none';
+                tabTools.style.backgroundColor = 'var(--success-color)';
+                tabTools.style.color = 'white';
+                tabGenerator.style.backgroundColor = 'var(--bg-accent)';
+                tabGenerator.style.color = 'var(--text-secondary)';
+            }
+        }
+        
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            } else {
+                document.documentElement.classList.remove('dark');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            }
+        }
+
+        function toggleTheme() {
+            const isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            if (isDark) {
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            } else {
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            }
+        }
+
+        function updateHydrationUI() {
+            const value = hydrationSlider.value;
+            hydrationValue.textContent = `${value}%`;
+            let warningText = '';
+            if (value < 60) {
+                warningText = '⚠️ Heads up: Dough might be dense.';
+            } else if (value > 75) {
+                warningText = '⚠️ Heads up: Dough will be very sticky.';
+            } else if (value > 70) {
+                warningText = '💡 Tip: Use wet hands for this sticky dough.';
+            } else if (value >= 60 && value <= 65) {
+                warningText = '✨ Great for beginners!';
+            }
+            hydrationWarning.textContent = warningText;
+        }
+
+        function handleStyleChange(event) {
+            const selectedStyle = event.target.value;
+            const idealHydration = styleData[selectedStyle].hydration;
+            hydrationSlider.value = idealHydration;
+            updateHydrationUI();
+            
+            // Update pizza count description
+            const countDesc = document.getElementById('pizza-count-desc');
+            if (selectedStyle === 'roman') {
+                countDesc.textContent = 'Each makes one 40x30cm (16x12 inch) tray.';
+            } else {
+                countDesc.textContent = 'Each makes a 25-30cm (10-12 inch) pizza.';
+            }
+        }
+
+        function updateCount(amount) {
+            let currentValue = parseInt(pizzaCountInput.value);
+            currentValue += amount;
+            if (currentValue >= 1 && currentValue <= 12) {
+                pizzaCountInput.value = currentValue;
+            }
+        }
+
+        function getRecipeAsText() {
+            const title = document.querySelector('#recipe-card h3')?.innerText || "Pizza Dough Recipe";
+            const ingredientsHeader = document.querySelector('#recipe-card h4:nth-of-type(1)')?.innerText || "Ingredients";
+            const ingredientsList = [...document.querySelectorAll('#recipe-card ul li')].map(li => `- ${li.innerText}`).join('\n');
+            const instructions = [...document.querySelectorAll('#recipe-card .instruction-step')].map((step, index) => {
+                const stepTitle = step.querySelector('h4').innerText;
+                const stepText = step.querySelector('p').innerText;
+                return `${index + 1}. ${stepTitle}\n${stepText}`;
+            }).join('\n\n');
+
+            return `${title}\n\n${ingredientsHeader}\n${ingredientsList}\n\nInstructions\n${instructions}`;
+        }
+
+        async function copyRecipe(btn) {
+            const textToCopy = getRecipeAsText();
+            try {
+                await navigator.clipboard.writeText(textToCopy);
+                const originalText = btn.innerHTML;
+                btn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    <span>Copied!</span>`;
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+                alert('Failed to copy recipe.');
+            }
+        }
+
+        async function shareRecipe() {
+            const textToShare = getRecipeAsText();
+            const shareData = {
+                title: 'My Custom Pizza Dough Recipe',
+                text: textToShare,
+            };
+            if (navigator.share) {
+                try {
+                    await navigator.share(shareData);
+                } catch (err) {
+                    console.error('Share failed:', err);
+                }
+            } else {
+                alert('Web Share API is not supported in your browser. Recipe copied to clipboard instead.');
+                const copyBtn = document.getElementById('copy-btn'); // Assuming the copy button has id="copy-btn"
+                if(copyBtn) copyRecipe(copyBtn);
+            }
+        }
+        
+        function printRecipe() {
+            // Set document title for PDF filename suggestion
+            const originalTitle = document.title;
+            document.title = `Pizza-Recipe-${window.currentRecipe?.style || 'custom'}-${new Date().toISOString().split('T')[0]}`;
+            
+            setTimeout(() => {
+                window.print();
+                document.title = originalTitle;
+            }, 100);
+        }
+
+        // === NEW FEATURES ===
+
+        // Baker's Percentage Toggle
+        function toggleBakerPercent() {
+            const percents = document.querySelectorAll('.baker-percent');
+            const amounts = document.querySelectorAll('.amount');
+            const isShowing = percents[0].style.display !== 'none';
+            
+            percents.forEach(p => p.style.display = isShowing ? 'none' : 'inline');
+            amounts.forEach(a => a.style.display = isShowing ? 'inline' : 'none');
+        }
+
+        // Recipe Scaling
+        function scaleRecipe(multiplier) {
+            const list = document.getElementById('ingredients-list');
+            const amounts = list.querySelectorAll('.amount');
+            
+            amounts.forEach(amount => {
+                const originalGrams = parseFloat(amount.dataset.grams);
+                const newGrams = originalGrams * multiplier;
+                amount.dataset.grams = newGrams;
+                
+                if (list.dataset.metric === 'true') {
+                    amount.textContent = `${newGrams.toFixed(newGrams < 10 ? 1 : 0)}g`;
+                } else {
+                    amount.textContent = gramsToImperial(newGrams, amount.parentElement.textContent.includes('Flour') || amount.parentElement.textContent.includes('Water'));
+                }
+            });
+            
+            // Update current recipe data
+            if (window.currentRecipe) {
+                window.currentRecipe.flour *= multiplier;
+                window.currentRecipe.water *= multiplier;
+                window.currentRecipe.salt *= multiplier;
+                window.currentRecipe.yeast *= multiplier;
+                window.currentRecipe.pizzaCount = Math.round(window.currentRecipe.pizzaCount * multiplier);
+            }
+        }
+
+        // Unit Toggle
+        function gramsToImperial(grams, isFluidOrFlour) {
+            if (isFluidOrFlour) {
+                const oz = (grams / 28.35).toFixed(1);
+                const cups = (grams / 240).toFixed(2);
+                return `${oz}oz (${cups}cups)`;
+            } else {
+                const oz = (grams / 28.35).toFixed(2);
+                return `${oz}oz`;
+            }
+        }
+
+        function toggleUnits() {
+            const list = document.getElementById('ingredients-list');
+            const btn = document.getElementById('unit-toggle');
+            const isMetric = list.dataset.metric === 'true';
+            
+            // Convert ingredients list
+            const amounts = list.querySelectorAll('.amount');
+            amounts.forEach(amount => {
+                const grams = parseFloat(amount.dataset.grams);
+                if (isMetric) {
+                    const isFluidOrFlour = amount.parentElement.textContent.includes('Flour') || amount.parentElement.textContent.includes('Water');
+                    amount.textContent = gramsToImperial(grams, isFluidOrFlour);
+                } else {
+                    amount.textContent = `${grams.toFixed(grams < 10 ? 1 : 0)}g`;
+                }
+            });
+            
+            // Convert measurements in instructions
+            const measurements = document.querySelectorAll('.measurement');
+            measurements.forEach(measurement => {
+                const grams = parseFloat(measurement.dataset.grams);
+                const type = measurement.dataset.type;
+                if (isMetric) {
+                    // Convert to imperial
+                    if (type === 'flour' || type === 'water') {
+                        const oz = (grams / 28.35).toFixed(1);
+                        const cups = (grams / 240).toFixed(2);
+                        measurement.textContent = `${oz}oz (${cups} cups)`;
+                    } else {
+                        const oz = (grams / 28.35).toFixed(2);
+                        measurement.textContent = `${oz}oz`;
+                    }
+                } else {
+                    // Convert to metric
+                    measurement.textContent = `${grams.toFixed(grams < 10 ? 1 : 0)}g`;
+                }
+            });
+            
+            list.dataset.metric = !isMetric;
+            btn.textContent = isMetric ? 'Switch to metric' : 'Switch to imperial';
+            
+            // Update all temperatures and measurements in instructions
+            const instructions = document.querySelectorAll('.instruction-step p');
+            instructions.forEach(p => {
+                let text = p.innerHTML;
+                
+                if (isMetric) {
+                    // Switch to Imperial (Fahrenheit first, inches first)
+                    text = text.replace(/29-35°C \/ 85-95°F/g, '85-95°F / 29-35°C');
+                    text = text.replace(/24-27°C \/ 75-80°F/g, '75-80°F / 24-27°C');
+                    text = text.replace(/18-21°C \/ 65-70°F/g, '65-70°F / 18-21°C');
+                    text = text.replace(/24°C \/ 75°F/g, '75°F / 24°C');
+                    text = text.replace(/18°C \/ 65°F/g, '65°F / 18°C');
+                    text = text.replace(/245°C \/ 475°F/g, '475°F / 245°C');
+                    text = text.replace(/260°C \/ 500°F/g, '500°F / 260°C');
+                    text = text.replace(/260-290°C \/ 500-550°F/g, '500-550°F / 260-290°C');
+                    text = text.replace(/260°C \/ 500°F/g, '500°F / 260°C');
+                    text = text.replace(/290°C \/ 550°F/g, '550°F / 290°C');
+                    text = text.replace(/430-480°C \/ 800-900°F/g, '800-900°F / 430-480°C');
+                    text = text.replace(/345-400°C \/ 650-750°F/g, '650-750°F / 345-400°C');
+                    
+                    // Sizes
+                    text = text.replace(/2\.5cm \(1-inch\)/g, '1-inch (2.5cm)');
+                    text = text.replace(/1cm \(½-inch\)/g, '½-inch (1cm)');
+                    text = text.replace(/8-10cm \(3-4 inches\)/g, '3-4 inches (8-10cm)');
+                    text = text.replace(/25-30cm \(10-12 inches\)/g, '10-12 inches (25-30cm)');
+                    text = text.replace(/30-35cm \(12-14 inches\)/g, '12-14 inches (30-35cm)');
+                    text = text.replace(/23x33cm \(9x13 inch\)/g, '9x13 inch (23x33cm)');
+                    text = text.replace(/40x30cm \(16x12 inch\)/g, '16x12 inch (40x30cm)');
+                    text = text.replace(/40x30cm/g, '16x12 inch (40x30cm)');
+                } else {
+                    // Switch to Metric (Celsius first, cm first)
+                    text = text.replace(/85-95°F \/ 29-35°C/g, '29-35°C / 85-95°F');
+                    text = text.replace(/75-80°F \/ 24-27°C/g, '24-27°C / 75-80°F');
+                    text = text.replace(/65-70°F \/ 18-21°C/g, '18-21°C / 65-70°F');
+                    text = text.replace(/75°F \/ 24°C/g, '24°C / 75°F');
+                    text = text.replace(/65°F \/ 18°C/g, '18°C / 65°F');
+                    text = text.replace(/475°F \/ 245°C/g, '245°C / 475°F');
+                    text = text.replace(/500°F \/ 260°C/g, '260°C / 500°F');
+                    text = text.replace(/500-550°F \/ 260-290°C/g, '260-290°C / 500-550°F');
+                    text = text.replace(/550°F \/ 290°C/g, '290°C / 550°F');
+                    text = text.replace(/800-900°F \/ 430-480°C/g, '430-480°C / 800-900°F');
+                    text = text.replace(/650-750°F \/ 345-400°C/g, '345-400°C / 650-750°F');
+                    
+                    // Sizes
+                    text = text.replace(/1-inch \(2\.5cm\)/g, '2.5cm (1-inch)');
+                    text = text.replace(/½-inch \(1cm\)/g, '1cm (½-inch)');
+                    text = text.replace(/3-4 inches \(8-10cm\)/g, '8-10cm (3-4 inches)');
+                    text = text.replace(/10-12 inches \(25-30cm\)/g, '25-30cm (10-12 inches)');
+                    text = text.replace(/12-14 inches \(30-35cm\)/g, '30-35cm (12-14 inches)');
+                    text = text.replace(/9x13 inch \(23x33cm\)/g, '23x33cm (9x13 inch)');
+                    text = text.replace(/16x12 inch \(40x30cm\)/g, '40x30cm (16x12 inch)');
+                }
+                
+                p.innerHTML = text;
+            });
+        }
+
+        // Save/Load Favorites
+        function saveRecipe() {
+            const name = prompt('Enter a name for this recipe:', `${window.currentRecipe.style} Pizza - ${new Date().toLocaleDateString()}`);
+            if (!name) return;
+            
+            const favorites = JSON.parse(localStorage.getItem('favoriteRecipes') || '[]');
+            if (favorites.length >= 10) {
+                alert('Maximum 10 recipes. Please delete one first.');
+                return;
+            }
+            
+            // Store the name in currentRecipe
+            window.currentRecipe.name = name;
+            
+            favorites.push({
+                name,
+                data: window.currentRecipe,
+                savedAt: new Date().toISOString()
+            });
+            
+            localStorage.setItem('favoriteRecipes', JSON.stringify(favorites));
+            alert(`Recipe "${name}" saved!`);
+            
+            // Update the title on the page
+            const titleElement = document.getElementById('recipe-title');
+            if (titleElement) {
+                titleElement.textContent = `🍕 ${name}`;
+            }
+            
+            updateFavoritesList();
+        }
+
+        function loadRecipe(index) {
+            const favorites = JSON.parse(localStorage.getItem('favoriteRecipes') || '[]');
+            const recipe = favorites[index];
+            if (!recipe) return;
+            
+            // Switch to generator tab first
+            switchTab('generator');
+            
+            // Set form values
+            document.querySelector(`input[name="style"][value="${recipe.data.style}"]`).checked = true;
+            document.getElementById('pizza-count').value = recipe.data.pizzaCount;
+            document.getElementById('hydration-slider').value = recipe.data.hydration;
+            document.querySelector(`input[name="oven"][value="${recipe.data.oven}"]`).checked = true;
+            document.querySelector(`input[name="time"][value="${recipe.data.time}"]`).checked = true;
+            
+            updateHydrationUI();
+            handleStyleChange({target: {value: recipe.data.style}});
+            
+            // Generate the recipe and scroll to it
+            setTimeout(() => {
+                generateBtn.click();
+                // Set the recipe name after generation
+                setTimeout(() => {
+                    if (window.currentRecipe) {
+                        window.currentRecipe.name = recipe.name;
+                        const titleElement = document.getElementById('recipe-title');
+                        if (titleElement) {
+                            titleElement.textContent = `🍕 ${recipe.name}`;
+                        }
+                    }
+                    document.getElementById('recipe-output').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 200);
+            }, 100);
+        }
+
+        function deleteRecipe(index) {
+            if (!confirm('Delete this recipe?')) return;
+            
+            const favorites = JSON.parse(localStorage.getItem('favoriteRecipes') || '[]');
+            favorites.splice(index, 1);
+            localStorage.setItem('favoriteRecipes', JSON.stringify(favorites));
+            updateFavoritesList();
+        }
+
+        function updateFavoritesList() {
+            const container = document.getElementById('favorites-list');
+            if (!container) return;
+            
+            const favorites = JSON.parse(localStorage.getItem('favoriteRecipes') || '[]');
+            
+            if (favorites.length === 0) {
+                container.innerHTML = '<p class="text-sm" style="color: var(--text-muted);">No saved recipes yet.</p>';
+                return;
+            }
+            
+            container.innerHTML = favorites.map((fav, index) => `
+                <div class="flex justify-between items-centre p-2 rounded" style="background-color: var(--bg-accent);">
+                    <button onclick="loadRecipe(${index})" class="flex-1 text-left text-sm" style="color: var(--text-primary);">
+                        <strong>${fav.name}</strong><br>
+                        <span class="text-xs" style="color: var(--text-muted);">${new Date(fav.savedAt).toLocaleDateString()}</span>
+                    </button>
+                    <button onclick="deleteRecipe(${index})" class="ml-2 px-2 py-1 text-xs rounded" style="color: var(--accent-primary);">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        function generateRecipe() {
+            const style = document.querySelector('input[name="style"]:checked').value;
+            const pizzaCount = parseInt(pizzaCountInput.value);
+            const hydration = parseInt(hydrationSlider.value);
+            const oven = document.querySelector('input[name="oven"]:checked').value;
+            const time = document.querySelector('input[name="time"]:checked').value;
+            const usePreferment = document.getElementById('use-preferment').checked;
+
+            const { flourPerPizza, saltPercent } = styleData[style];
+            let flour = flourPerPizza * pizzaCount;
+            let water = flour * (hydration / 100);
+            const salt = flour * (saltPercent / 100);
+            
+            // Apply temperature adjustments
+            const { yeastMultiplier, timeAdjustment } = applyTemperatureAdjustments();
+            
+            let yeast;
+            if (time === 'quick') yeast = flour * 0.01 * yeastMultiplier;
+            else if (time === 'overnight') yeast = flour * 0.004 * yeastMultiplier;
+            else yeast = flour * 0.002 * yeastMultiplier;
+            
+            // Calculate preferment if selected
+            let prefermentInstructions = '';
+            if (usePreferment) {
+                const pf = calculatePreferment(flour);
+                prefermentInstructions = `<div class="p-4 rounded-lg mb-4" style="border: 2px solid var(--success-color); background-color: var(--success-bg);">
+                    <h5 class="font-bold mb-2" style="color: var(--success-color);">Poolish/Preferment (make 8-12 hours before)</h5>
+                    <ul class="text-sm space-y-1">
+                        <li>• Flour: <span class="measurement" data-grams="${pf.flour.toFixed(0)}" data-type="flour">${pf.flour.toFixed(0)}g</span></li>
+                        <li>• Water: <span class="measurement" data-grams="${pf.water.toFixed(0)}" data-type="water">${pf.water.toFixed(0)}g</span></li>
+                        <li>• Yeast: <span class="measurement" data-grams="${pf.yeast.toFixed(1)}" data-type="other">${pf.yeast.toFixed(1)}g</span></li>
+                    </ul>
+                    <p class="text-sm mt-2">Mix these ingredients, cover, and let sit at room temperature for 8-12 hours until bubbly. Then use in main dough.</p>
+                    <p class="text-sm mt-2"><strong>Main Dough Adjustments:</strong> Flour: <span class="measurement" data-grams="${pf.mainFlour.toFixed(0)}" data-type="flour">${pf.mainFlour.toFixed(0)}g</span>, Water: <span class="measurement" data-grams="${pf.mainWater.toFixed(0)}" data-type="water">${pf.mainWater.toFixed(0)}g</span></p>
+                </div>`;
+            }
+
+            const instructions = [
+                {
+                    title: "Measure Ingredients (Get Your Scale Ready!)",
+                    text: `Pizza dough is all about precision. Use a digital kitchen scale for accuracy. Measure out <span class="measurement" data-grams="${flour.toFixed(0)}" data-type="flour">${flour.toFixed(0)}g</span> of '00' flour (or bread flour), <span class="measurement" data-grams="${yeast.toFixed(1)}" data-type="other">${yeast.toFixed(1)}g</span> of instant yeast (not active dry - instant dissolves directly), <span class="measurement" data-grams="${salt.toFixed(1)}" data-type="other">${salt.toFixed(1)}g</span> of fine sea salt, and <span class="measurement" data-grams="${water.toFixed(0)}" data-type="water">${water.toFixed(0)}g</span> of water. Water temperature matters: aim for lukewarm (29-35°C / 85-95°F). Too hot kills the yeast, too cold slows fermentation. Pro tip: If your tap water is chlorinated, use filtered or bottled water for better flavour.`
+                },
+                {
+                    title: "Mix the Dough",
+                    text: `In a large mixing bowl, combine the flour, instant yeast, and salt. Give it a quick whisk to distribute the yeast evenly (this prevents salty spots that can kill yeast). Make a well in the centre and pour in all the water at once. Using a wooden spoon, fork, or your hand, mix in circular motions until no dry flour remains. The dough will look shaggy, rough, and sticky - that's perfect! Don't worry about it being smooth yet. Cover with a damp towel or plastic wrap and let it rest for 15-20 minutes. This resting period (called autolyse) allows the flour to fully hydrate and makes kneading easier.`
+                },
+                // ... Dynamically add next steps based on 'time'
+            ];
+
+            // Add kneading/fermentation steps
+            switch (time) {
+                case 'quick':
+                    instructions.push({ 
+                        title: "Knead the Dough", 
+                        text: "Lightly flour your work surface (don't overdo it - too much flour makes tough dough). Turn the dough out and begin kneading: push with the heels of your hands, fold the dough back over itself, rotate 90°, and repeat. Knead for 8-10 minutes. You'll feel it transform from rough and sticky to smooth and elastic. The windowpane test: stretch a small piece thin - if it forms a translucent membrane without tearing, gluten is fully developed! Shape into a smooth ball, place in a lightly oiled bowl, and turn to coat. Cover tightly with plastic wrap or a damp towel." 
+                    });
+                    instructions.push({ 
+                        title: "First Rise (Bulk Fermentation)", 
+                        text: `Place the covered bowl in a warm, draft-free spot (24-27°C / 75-80°F is ideal). Near a warm oven or on top of the fridge works well. Let it rise for 2-3 hours, or until doubled in size. To test: gently poke the dough with a floured finger. If the indent springs back slowly and leaves a slight impression, it's ready. If it springs back immediately, give it more time. If it doesn't spring back at all, you may have over-proofed (still usable, but handle gently).` 
+                    });
+                    break;
+                case 'overnight':
+                    instructions.push({ 
+                        title: "Knead the Dough", 
+                        text: "Turn the dough onto a lightly floured surface. Knead for 5-7 minutes - less than the quick method since cold fermentation continues gluten development. Work until the dough is cohesive and springs back when poked. It can still be slightly tacky (wet hands help!). The dough will smooth out during the long fermentation. Shape into a ball, place in an oiled bowl, and cover tightly with plastic wrap to prevent a skin from forming." 
+                    });
+                    instructions.push({ 
+                        title: "Cold Fermentation (Overnight)", 
+                        text: `Immediately place the covered bowl in the refrigerator (not the freezer!). Let it ferment slowly for 12-24 hours. The cold temperature slows yeast activity, allowing enzymes to break down starches and proteins, creating deeper flavour and better texture. Aim for 16-20 hours for optimal flavour. The dough will rise slowly - it may not double, but should increase by 50-75%. Don't panic if it doesn't look huge - cold dough is denser. Before using, remove from fridge and let sit at room temperature for 30 minutes to take the chill off before shaping.` 
+                    });
+                    break;
+                case 'long':
+                    instructions.push({ 
+                        title: "Develop Gluten (No-Knead Method)", 
+                        text: "Cover the bowl with plastic wrap and let rest for 30 minutes at room temperature. This autolyse continues. Now, perform 'stretch and folds' right in the bowl: wet your hand, grab one side of the dough, stretch it up, and fold it over the centre. Rotate the bowl 90° and repeat. Do this 4 times (all four 'sides'). You'll feel the dough tighten and become more elastic. Cover again and wait 30 minutes. Repeat this stretch-and-fold process 2-3 more times (total of 3-4 sets over 1.5-2 hours). By the final set, the dough should feel strong, smooth, and less sticky. This method builds gluten without aggressive kneading, perfect for high-hydration doughs." 
+                    });
+                    instructions.push({ 
+                        title: "Extended Cold Fermentation (2-3 Days)", 
+                        text: `After the final stretch and fold, transfer to an oiled, airtight container (or cover the bowl tightly with plastic wrap). Place in the refrigerator for 2-3 days. The dough will slowly ferment, developing incredibly complex flavors - tangy, slightly sour, almost sourdough-like. Day 2 is great, Day 3 is phenomenal! The dough will rise gradually and may show bubbles on the surface. Before using, remove from fridge 1-2 hours before shaping to warm up (see temperature guidance in final proof step). The dough should feel extensible and relaxed, making it easy to shape.` 
+                    });
+                    break;
+            }
+
+            // Add shaping and proofing step
+            let finalProofText;
+            if (style === 'roman') {
+                finalProofText = `Roman/Pinsa dough is very wet and extensible - embrace it! Pro technique: Prepare ${pizzaCount} 40x30cm tray(s) - dust one set with semolina flour (this prevents sticking and adds texture), and oil another set with olive oil. Gently turn the dough out onto the semolina-dusted tray. Using floured hands, gently press and stretch the dough toward the edges. Don't worry about perfection - it will relax and spread. Once roughly sized, carefully transfer to the oiled tray using your hands or a large spatula. Drizzle a bit more oil on top and use your fingertips to gently coax it toward the corners. Don't force it!`;
+                finalProofText += (time === 'quick') ? " Cover loosely with oiled plastic wrap and let it rest for 30-60 minutes at room temperature. After resting, gently dimple and stretch again to fill the tray completely. The dough should be relaxed and cooperative now." : " Cover loosely with oiled plastic wrap and let it sit at room temperature for 2-3 hours to warm up (target: 18-21°C / 65-70°F). The dough will relax, spread naturally, and become puffy. Pro tip: Use a meat thermometer inserted into the dough - you're looking for 18-21°C / 65-70°F! In a warm kitchen (24°C / 75°F), this takes ~2 hours. In a cooler room (18°C / 65°F), allow 3-4 hours. The dough should jiggle when you shake the tray and show visible air bubbles on the surface.";
+            } else {
+                finalProofText = `Turn the dough onto a clean work surface (no flour needed yet - the natural tackiness helps with shaping). Using a bench scraper or knife, divide the dough into ${pizzaCount} equal pieces (weigh them if you want perfection - divide total dough weight by ${pizzaCount}). Working with one piece at a time, shape into tight balls: cup your hand over the dough and move in circles, using the friction of the counter to create surface tension. The top should be smooth and taut. Place seam-side down on a lightly floured tray, leaving 8-10cm (3-4 inches) between balls to allow for expansion. Alternatively, use individual containers (deli containers work great!) lightly oiled. Cover with a damp towel or plastic wrap.`;
+                finalProofText += (time === 'quick') ? " Let them rest at room temperature for 30-60 minutes. The balls should puff up, feel airy, and pass the poke test (springs back slowly when gently pressed). They're now ready to stretch into pizza!" : " Let them sit at room temperature for 2-4 hours to warm up (target: 18-21°C / 65-70°F) and become puffy and light. Use a meat thermometer to check the internal temp! Room temp matters: warm kitchen (24°C / 75°F) = 2-3 hours, cooler room (18°C / 65°F) = 3-4 hours. The dough should feel soft, pillowy, jiggly, and alive - not dense or cold. They should have nearly doubled in size. When you gently poke one, it should spring back slowly, leaving a slight indent. This final proof is critical - rushing it leads to tough, dense crust. Be patient!";
+            }
+            instructions.push({ title: "Shape & Final Proof", text: finalProofText });
+
+            // Add baking step
+            let bakingText;
+            if (oven === 'home') {
+                if (style === 'roman') {
+                    bakingText = "Preheat your oven to 245°C / 475°F (gas mark 9). Dimple the dough with your fingertips and drizzle with olive oil. Spread tomato sauce evenly, leaving a small border. Place the tray on the bottom rack and bake for 10-12 minutes until the base starts to set. Remove from oven, add fresh mozzarella (torn or sliced), and move to the top rack. Bake for another 10-12 minutes until the cheese is melted and bubbly, and the edges are golden and crispy. Let it rest for 2-3 minutes before slicing.";
+                } else if (style === 'detroit') {
+                    bakingText = "Preheat your oven to 260°C / 500°F (gas mark 10, or as high as it goes). Press the dough into a well-oiled Detroit-style pan or 23x33cm (9x13 inch) baking pan, making sure it reaches all corners. Layer Wisconsin brick cheese (or low-moisture mozzarella) all the way to the edges - this creates the signature caramelized cheese crust. Add pepperoni if desired, pressing it slightly into the cheese. Ladle sauce on top in 3-4 thick stripes (Detroit style goes 'cheese first, sauce on top'). Bake on the middle rack for 12-15 minutes until the cheese at the edges is deeply caramelized and the crust is golden. Let rest 3-4 minutes, then use a spatula to loosen the edges and slide onto a cutting board. The crispy cheese crust should lift off with the pizza!";
+                } else if (style === 'neapolitan') {
+                    bakingText = "Preheat your oven with a pizza stone or steel on the top rack to its maximum temperature (at least 260°C / 500°F, ideally 290°C / 550°F or gas mark 10) for a full hour. On a floured surface, gently stretch the dough by pressing from the centre outward, leaving a 2.5cm (1-inch) border for the crust. Use your knuckles to stretch it to 25-30cm (10-12 inches), rotating as you go. Place on a floured pizza peel. Add a thin layer of crushed San Marzano tomatoes, a drizzle of olive oil, torn fresh mozzarella, and fresh basil leaves. Give the peel a quick shake to ensure the pizza slides freely. Launch onto the preheated stone and bake for 6-9 minutes, rotating halfway through, until the crust has leopard-spotted charring and the cheese is bubbling. The edges should puff up beautifully.";
+                } else {
+                    bakingText = "Preheat your oven with a pizza stone or steel on the middle rack to 260-290°C / 500-550°F (gas mark 10) for one hour. Stretch the dough on a floured surface to 30-35cm (12-14 inches), maintaining an even thickness throughout (NY style doesn't have a thick rim). Transfer to a cornmeal-dusted pizza peel. Spread a generous layer of tomato sauce, leaving a 1cm (½-inch) border. Add shredded low-moisture mozzarella evenly across the pizza, then your favourite toppings (don't overload!). Slide onto the preheated stone and bake for 7-10 minutes until the bottom is crispy with dark spots, the cheese is fully melted with some browning, and the crust is golden. The pizza should be firm enough to fold in half for that classic NY slice!";
+                }
+            } else {
+                if (style === 'neapolitan') {
+                    bakingText = "Preheat your pizza oven to 430-480°C / 800-900°F. Gently stretch the dough to 25-30cm (10-12 inches), leaving a puffy border. Top with crushed tomatoes, fresh mozzarella, olive oil, and basil. Launch into the oven and bake for 60-90 seconds, rotating every 20-30 seconds with a pizza peel to ensure even cooking. Watch for the leopard-spotted char on the crust and bubbling cheese. The high heat creates the signature blistered, puffy Neapolitan crust.";
+                } else if (style === 'ny') {
+                    bakingText = "Preheat your pizza oven to 345-400°C / 650-750°F. Stretch to 30-35cm (12-14 inches) with even thickness. Top with sauce, mozzarella, and toppings. Launch and bake for 4-6 minutes, rotating once or twice, until the bottom is crispy and spotted, cheese is melted, and crust is golden brown.";
+                } else {
+                    bakingText = "A high-temp pizza oven is not ideal for Detroit or Roman style pizzas. These styles benefit from longer, lower-temperature baking in a home oven to develop the proper texture. Please use a home oven for best results.";
+                }
+            }
+            instructions.push({ title: "Bake Your Pizza", text: bakingText });
+
+            if (hydration >= 70) {
+                 instructions.push({ title: "Pro Tip for Sticky Dough", text: `This dough is sticky! Use wet hands when handling and shaping. A bench scraper is your best friend. Be gentle when stretching to preserve the airy structure.` });
+            }
+
+            const actionButtonsHtml = `
+                <div class="mt-6 pt-6 grid grid-cols-1 sm:grid-cols-3 gap-3" style="border-top: 1px solid var(--border-color);">
+                    <button id="copy-btn" class="text-white font-bold py-3 px-4 rounded-xl flex items-centre justify-centre gap-x-2 transition-colors shadow-md" style="background-color: var(--italian-green);">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" /><path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h6a2 2 0 00-2-2H5z" /></svg>
+                        <span>Copy</span>
+                    </button>
+                    <button id="print-btn" class="text-white font-bold py-3 px-4 rounded-xl flex items-centre justify-centre gap-x-2 transition-colors shadow-md" style="background-color: var(--text-secondary);">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v-4a1 1 0 011-1h10a1 1 0 011 1v4h1a2 2 0 002-2v-3a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" /></svg>
+                        <span>Print / PDF</span>
+                    </button>
+                    <button id="share-btn" class="text-white font-bold py-3 px-4 rounded-xl flex items-centre justify-centre gap-x-2 transition-colors shadow-md" style="background-color: var(--accent-primary);">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg>
+                        <span>Share</span>
+                    </button>
+                </div>`;
+
+            const unitText = style === 'roman' ? (pizzaCount > 1 ? `${pizzaCount} Trays (40x30cm)` : '1 Tray (40x30cm)') : (pizzaCount > 1 ? `${pizzaCount} Pizzas` : '1 Pizza');
+            
+            // Store recipe data globally for features
+            window.currentRecipe = { flour, water, salt, yeast, hydration, pizzaCount, style, oven, time, instructions };
+            
+            // Get recipe name or use default
+            const recipeName = window.currentRecipe.name || 'Your Custom Recipe';
+            
+            const ingredientsHtml = `
+                <div class="flex justify-between items-centre mb-4">
+                    <h3 id="recipe-title" class="text-2xl font-bold title-font" style="color: var(--success-color);">🍕 ${recipeName}</h3>
+                    <div class="flex gap-2">
+                        <button id="baker-percent-toggle" class="px-3 py-1 text-sm rounded-lg transition-colors" style="border: 1px solid var(--border-color); background-color: var(--bg-card); color: var(--text-primary);">
+                            Baker's %
+                        </button>
+                        <button id="save-recipe-btn" class="px-3 py-1 text-sm rounded-lg transition-colors" style="border: 1px solid var(--border-color); background-color: var(--bg-card); color: var(--text-primary);">
+                            💾 Save
+                        </button>
+                    </div>
+                </div>
+                <div class="rounded-xl p-5 shadow-inner" style="background-color: var(--bg-card); border: 1px solid var(--border-color);">
+                    <div class="flex justify-between items-centre mb-3">
+                        <h4 class="font-semibold text-lg" style="color: var(--text-primary);">📋 Ingredients (${unitText})</h4>
+                        <div class="flex gap-1">
+                            <button onclick="scaleRecipe(0.5)" class="px-2 py-1 text-xs rounded transition-colors" style="background-color: var(--bg-accent); color: var(--text-secondary);">×0.5</button>
+                            <button onclick="scaleRecipe(2)" class="px-2 py-1 text-xs rounded transition-colors" style="background-color: var(--bg-accent); color: var(--text-secondary);">×2</button>
+                            <button onclick="scaleRecipe(3)" class="px-2 py-1 text-xs rounded transition-colors" style="background-color: var(--bg-accent); color: var(--text-secondary);">×3</button>
+                        </div>
+                    </div>
+                    <ul id="ingredients-list" class="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2" style="color: var(--text-secondary);" data-metric="true">
+                        <li class="flex items-centre gap-2"><span class="text-lg">🌾</span><strong>Flour:</strong> <span class="amount" data-grams="${flour.toFixed(0)}">${flour.toFixed(0)}g</span> <span class="baker-percent" style="display:none;">(100%)</span></li>
+                        <li class="flex items-centre gap-2"><span class="text-lg">💧</span><strong>Water:</strong> <span class="amount" data-grams="${water.toFixed(0)}">${water.toFixed(0)}g</span> <span class="baker-percent" style="display:none;">(${hydration}%)</span></li>
+                        <li class="flex items-centre gap-2"><span class="text-lg">🧂</span><strong>Salt:</strong> <span class="amount" data-grams="${salt.toFixed(1)}">${salt.toFixed(1)}g</span> <span class="baker-percent" style="display:none;">(${(salt/flour*100).toFixed(1)}%)</span></li>
+                        <li class="flex items-centre gap-2"><span class="text-lg">🍄</span><strong>Yeast:</strong> <span class="amount" data-grams="${yeast.toFixed(1)}">${yeast.toFixed(1)}g</span> <span class="baker-percent" style="display:none;">(${(yeast/flour*100).toFixed(2)}%)</span></li>
+                    </ul>
+                    <div class="mt-3 flex gap-2">
+                        <button id="unit-toggle" class="px-3 py-1 text-xs rounded transition-colors" style="background-color: var(--bg-accent); color: var(--text-secondary);">Switch to imperial</button>
+                    </div>
+                </div>`;
+
+            const instructionsHtml = prefermentInstructions + `<h4 class="font-semibold text-lg mt-6 mb-3" style="color: var(--text-primary);">👨‍🍳 Instructions</h4>` + instructions.map((step, index) => `
+                <div class="mt-4 instruction-step p-4 rounded-lg" style="background-color: var(--bg-card); border-left: 4px solid var(--success-color);">
+                    <h4 class="font-semibold text-base mb-2" style="color: var(--text-primary);">Step ${index + 1}: ${step.title}</h4>
+                    <p class="text-sm leading-relaxed" style="color: var(--text-secondary);">${step.text}${index === 0 && timeAdjustment ? timeAdjustment : ''}</p>
+                </div>
+            `).join('');
+
+            const notesHtml = `
+                <div class="mt-6 p-4 rounded-lg" style="border: 1px solid var(--border-color); background-color: var(--bg-card);">
+                    <h4 class="font-semibold text-base mb-2" style="color: var(--text-primary);">📝 Recipe Notes</h4>
+                    <textarea id="recipe-notes" placeholder="Add your personal notes here (e.g., 'Worked great at 18 hours!' or 'Next time use less salt')..." class="w-full p-3 rounded text-sm resize-vertical" rows="3" style="border: 1px solid var(--border-color); background-color: var(--bg-primary); color: var(--text-primary);"></textarea>
+                    <button onclick="saveNotes()" class="mt-2 px-3 py-1 text-sm rounded" style="background-color: var(--italian-green); color: white;">Save Notes</button>
+                </div>`;
+
+            recipeOutputCard.innerHTML = ingredientsHtml + instructionsHtml + notesHtml + actionButtonsHtml;
+            
+            document.getElementById('copy-btn').addEventListener('click', (e) => copyRecipe(e.currentTarget));
+            document.getElementById('print-btn').addEventListener('click', printRecipe);
+            document.getElementById('share-btn').addEventListener('click', shareRecipe);
+            document.getElementById('baker-percent-toggle').addEventListener('click', toggleBakerPercent);
+            document.getElementById('unit-toggle').addEventListener('click', toggleUnits);
+            document.getElementById('save-recipe-btn').addEventListener('click', saveRecipe);
+            
+            // Load saved notes if they exist
+            loadNotes();
+
+            if (!recipeOutputCard.classList.contains('show')) {
+                recipeOutputCard.classList.add('show');
+            }
+            recipeOutputCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Recipe Notes Functions
+        function saveNotes() {
+            const notes = document.getElementById('recipe-notes').value;
+            const recipeKey = `${window.currentRecipe.style}-${window.currentRecipe.pizzaCount}-${window.currentRecipe.hydration}`;
+            const allNotes = JSON.parse(localStorage.getItem('recipeNotes') || '{}');
+            allNotes[recipeKey] = notes;
+            localStorage.setItem('recipeNotes', JSON.stringify(allNotes));
+            alert('Notes saved!');
+        }
+
+        function loadNotes() {
+            if (!window.currentRecipe) return;
+            const recipeKey = `${window.currentRecipe.style}-${window.currentRecipe.pizzaCount}-${window.currentRecipe.hydration}`;
+            const allNotes = JSON.parse(localStorage.getItem('recipeNotes') || '{}');
+            const notes = allNotes[recipeKey] || '';
+            const textarea = document.getElementById('recipe-notes');
+            if (textarea) textarea.value = notes;
+        }
+
+        // Temperature-based adjustments
+        function applyTemperatureAdjustments() {
+            const roomTemp = parseFloat(document.getElementById('room-temp').value);
+            if (!roomTemp || roomTemp < 15 || roomTemp > 30) return { yeastMultiplier: 1, timeAdjustment: '' };
+            
+            // Warmer = less yeast, shorter time; Cooler = more yeast, longer time
+            const baseTemp = 22; // °C
+            const tempDiff = roomTemp - baseTemp;
+            const yeastMultiplier = 1 - (tempDiff * 0.05); // 5% per degree
+            
+            let timeAdjustment = '';
+            if (tempDiff > 3) {
+                timeAdjustment = ' (reduce time by 20-30% due to warm room)';
+            } else if (tempDiff < -3) {
+                timeAdjustment = ' (add 20-30% more time due to cool room)';
+            }
+            
+            return { yeastMultiplier: Math.max(0.5, Math.min(1.5, yeastMultiplier)), timeAdjustment };
+        }
+
+        // Poolish/Preferment calculations
+        function calculatePreferment(totalFlour) {
+            const prefermentFlour = totalFlour * 0.3;
+            const prefermentWater = prefermentFlour; // 100% hydration for poolish
+            const prefermentYeast = prefermentFlour * 0.001; // 0.1% of flour
+            
+            return {
+                flour: prefermentFlour,
+                water: prefermentWater,
+                yeast: prefermentYeast,
+                mainFlour: totalFlour - prefermentFlour,
+                mainWater: (totalFlour * (parseInt(document.getElementById('hydration-slider').value) / 100)) - prefermentWater
+            };
+        }
+
+        // Initialize favorites list on load
+        updateFavoritesList();
+    </script>
+</body>
+</html>

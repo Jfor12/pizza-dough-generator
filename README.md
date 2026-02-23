@@ -52,7 +52,7 @@ flowchart TD
 **Style-Specific Intelligence**: Each pizza style (Neapolitan, NY, Detroit, Roman) includes tailored baking temperatures, flour amounts per unit, and technique variations.
 
 ## 🌐 Live Application
-**Try it now**: [jacopofornesi.co.uk/pizza-dough-generator](https://jacopofornesi.co.uk/pizza-dough-generator/)
+**Try it now**: https://jfor12.github.io/pizza-dough-generator/ 
 
 ## 🛠️ Tech Stack
 - **Language**: Vanilla JavaScript (zero dependencies)

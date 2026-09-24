@@ -1,0 +1,9 @@
+{
+  "name": "pizza-dough-generator",
+  "private": true,
+  "type": "module",
+  "description": "Pizza dough recipe calculator. Static site: no build step, no dependencies.",
+  "scripts": {
+    "test": "node --test"
+  }
+}

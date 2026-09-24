@@ -1,101 +1,77 @@
 # Pizza Dough Generator
-Production-grade recipe calculator delivering authentic Italian pizza recipes with scientific precision.
 
-## 🚀 The High-Level Architecture
+A pizza dough calculator for Neapolitan, New York, Detroit and Roman-style pizza.
+Choose a style, how many, the hydration, your oven and your schedule, and it works
+out the quantities, baker's percentages and a step-by-step method as you go.
+
+**Try it:** https://jfor12.github.io/pizza-dough-generator/
+
+## How it works
+
 ```mermaid
-flowchart TD
-    A[User Input] --> B[Recipe Engine]
-    B --> C{Pizza Style}
-    
-    C -->|Neapolitan| D[68% Hydration]
-    C -->|New York| E[62% Hydration]
-    C -->|Detroit| F[72% Hydration]
-    C -->|Roman/Pinsa| G[80% Hydration]
-    
-    D --> H[Fermentation Calculator]
-    E --> H
-    F --> H
-    G --> H
-    
-    H --> I[Temperature Adjuster]
-    I --> J[Poolish Generator]
-    J --> K[Complete Recipe Output]
-    
-    K --> L[Baker's Math Converter]
-    K --> M[Temperature Timer]
-    
-    style B fill:#C8432D,color:#fff
-    style H fill:#4A7C2C,color:#fff
-    style K fill:#F8F6F3,color:#000
+flowchart LR
+    A[Settings form] --> B[normaliseSettings]
+    B --> C[computeRecipe]
+    C --> D[Formula table<br>grams or cups, baker's %]
+    C --> E[method<br>steps for style, oven, schedule]
+    B <--> F[URL query<br>shareable recipe links]
+    B <--> G[localStorage<br>saved recipes, notes, timer]
 ```
 
-## ✨ Key Engineering Highlights
-### 1. Scientific Recipe Calculations
-**Baker's Percentage System**: Implemented true baker's math where all ingredients are calculated as percentages of flour weight, ensuring consistent results regardless of batch size.
+- **Baker's maths.** Every ingredient is a percentage of the flour weight, so the
+  recipe scales cleanly from one pizza to twelve.
 
-**Temperature-Responsive Formulas**: Dynamic yeast calculations that adjust based on ambient temperature (10-30°C), automatically reducing yeast amounts for warmer environments to prevent over-fermentation.
+  | Style | Flour per pizza | Hydration | Salt |
+  |---|---|---|---|
+  | Neapolitan | 155 g | 68% | 2.8% |
+  | New York | 170 g | 62% | 2.5% |
+  | Detroit | 180 g | 72% | 2.2% |
+  | Roman (40×30 cm tray) | 333 g | 80% | 2.5% |
 
-**Hydration Optimisation**: Real-time hydration warnings and recommendations that guide users through the 55-80% hydration spectrum, with style-specific optimal ranges pre-configured.
+- **Schedules.** Instant yeast is 1% of the flour for a quick 2–4 hour rise, 0.4%
+  overnight and 0.2% for a 2–3 day cold ferment.
+- **Room temperature.** Yeast goes down 5% per degree above 22°C and up 5% per
+  degree below it, capped at ±50%. The rise step says whether to expect it to
+  take longer or shorter.
+- **Poolish.** 30% of the flour becomes a 100%-hydration pre-ferment with 0.1%
+  yeast. The main dough gets the remainder, so the overall formula is unchanged.
+- **Units.** Grams, or cups, ounces and teaspoons (flour at 125 g per cup, water
+  at 237 g per cup), with grams always shown alongside.
 
-### 2. Advanced Fermentation Science
-**Multi-Timeline Support**: Three distinct fermentation paths (Quick: 2-4h, Overnight: 12-24h, Long: 2-3d) with exponentially decreasing yeast amounts for longer ferments.
+It also keeps saved recipes and per-recipe notes, runs a dough timer that survives
+closing the tab, gives every recipe a shareable link, and prints just the recipe.
+Everything is stored in the browser only.
 
-**Poolish/Preferment System**: Automated 30% poolish calculator that splits ingredients between preferment and main dough, enhancing flavour complexity and digestibility.
+## Files
 
-**Dual Temperature Instructions**: Separate timing guidance for cold fermentation (4°C fridge) and room temperature proofing, accounting for thermal dynamics.
+| File | What it does |
+|---|---|
+| `index.html` | The page, including the tips and glossary text |
+| `styles.css` | All styles: light and dark themes, print layout |
+| `dough.js` | The recipe maths: pure functions, no DOM |
+| `method.js` | The step-by-step method for a recipe, in either unit system |
+| `app.js` | Reads the form, renders the recipe, saving, notes, timer and theme |
+| `tests/` | Unit tests for the maths and method |
+| `fonts/` | Newsreader and IBM Plex Mono, self-hosted (SIL Open Font License) |
 
-### 3. Professional UX & Design
-**Theme Persistence**: Light/dark mode implementation with localStorage persistence and smooth CSS variable transitions across 12+ colour tokens.
+No build step and no dependencies: GitHub Pages serves the files as they are.
 
-**Progressive Disclosure**: Accordion-based ingredient sections and step-by-step instructions that reduce cognitive load while maintaining comprehensive detail.
+## Working on it
 
-**Style-Specific Intelligence**: Each pizza style (Neapolitan, NY, Detroit, Roman) includes tailored baking temperatures, flour amounts per unit, and technique variations.
+```bash
+npm test                   # run the unit tests (Node 20+)
+python3 -m http.server     # then open http://localhost:8000
+```
 
-## 🌐 Live Application
-**Try it now**: https://jfor12.github.io/pizza-dough-generator/ 
+The page uses ES modules, so open it through a local server rather than
+straight from the file.
 
-## 🛠️ Tech Stack
-- **Language**: Vanilla JavaScript (zero dependencies)
-- **Styling**: TailwindCSS, CSS Custom Properties
-- **APIs**: LocalStorage, Web Share, Clipboard, Notifications
-- **Architecture**: Single-page static HTML (1,601 lines)
-- Design influenced by modern web aesthetics
-- Built with love for pizza enthusiasts worldwide
+## Roadmap
 
-## 🐛 Known Issues
-
-None at the moment! If you find any bugs, please [open an issue](https://github.com/Jfor12/pizza-dough-generator/issues).
-
-## 🗺️ Roadmap
-
-Completed features:
-- [x] Roman/Pinsa style pizza (40×30cm trays with correct 333g flour per tray)
-- [x] Comprehensive step-by-step instructions with temperature guidance
-- [x] Temperature-based yeast adjustments
-- [x] Baker's percentage display
-- [x] Recipe scaling functionality
-- [x] Recipe favourites system (up to 10 saved recipes with custom names)
-- [x] Fermentation timer with notifications
-- [x] Full unit toggle (metric/imperial for ingredients, temperatures, and sizes)
-- [x] Dynamic measurement conversion throughout all instructions
-- [x] Ingredient substitutions guide
-- [x] Poolish/preferment option with measurement conversion
-- [x] Recipe notes functionality
-- [x] Print/PDF export with proper formatting
-- [x] Tab navigation for better organisation
-- [x] Timer persistence across page refreshes and browser closure
-- [x] Custom recipe naming with persistent titles
-- [x] Auto-load saved recipes with tab switching
-
-Potential future enhancements:
-- [ ] More pizza styles (Sicilian, Focaccia, etc.)
+- [x] Recipe sharing via URL
+- [ ] More pizza styles (Sicilian, focaccia)
 - [ ] Sourdough starter calculator
-- [ ] Video tutorials integration
+- [ ] Video tutorials
 - [ ] Multi-language support
 - [ ] Ingredient calculator for bulk preparation
-- [ ] Recipe sharing via URL
 - [ ] Mobile app version
-
----
-
-**Made with ❤️ and a passion for perfect pizza**

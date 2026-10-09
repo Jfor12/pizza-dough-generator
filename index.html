@@ -8,14 +8,15 @@
 <meta name="author" content="Jacopo Fornesi">
 <link rel="canonical" href="https://jfor12.github.io/pizza-dough-generator/">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#f3eee4" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#161412" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#2b1a12" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#120d0b" media="(prefers-color-scheme: dark)">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Pizza Dough Generator">
 <meta property="og:description" content="A pizza dough recipe worked out for your style, oven and schedule.">
 <meta property="og:url" content="https://jfor12.github.io/pizza-dough-generator/">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
-<link rel="preload" href="fonts/newsreader-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/fredoka-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/nunito-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="styles.css">
 <script>
   // Apply a saved theme before first paint to avoid a flash.
@@ -28,7 +29,10 @@
 
 <header class="top">
   <div class="wrap top__inner">
-    <a class="top__home" href="https://jacopofornesi.co.uk/">Jacopo Fornesi</a>
+    <a class="brand" href="./">
+      <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false"><circle cx="32" cy="32" r="30" fill="#e0a45e"/><circle cx="32" cy="32" r="24" fill="#c0331b"/><circle cx="32" cy="32" r="24" fill="none" stroke="#f6dfa8" stroke-width="4" stroke-dasharray="9 7"/><circle cx="24" cy="25" r="5" fill="#fff4dc"/><circle cx="40" cy="38" r="5" fill="#fff4dc"/><circle cx="37" cy="22" r="4" fill="#fff4dc"/><path d="M22 38c3-4 7-4 9 0-3 3-6 3-9 0z" fill="#2e6b30"/><path d="M41 26c3-3 6-2 7 1-3 2-5 2-7-1z" fill="#2e6b30"/></svg>
+      Pizza Dough Generator
+    </a>
     <nav class="top__nav" aria-label="Site">
       <a href="https://jacopofornesi.co.uk/pizza-dough-recipe-generator/">How I built it</a>
       <button type="button" class="linkish" id="theme-toggle" aria-pressed="false">Dark mode</button>
@@ -38,7 +42,7 @@
 
 <main id="main" class="wrap">
   <header class="intro">
-    <h1>Pizza Dough Generator</h1>
+    <h1>Your pizza dough, <span>worked out.</span></h1>
     <p class="intro__lede">Choose a style, your oven and how long you can wait. It works out the quantities, the baker's percentages and a method that fits your kitchen.</p>
   </header>
 
@@ -47,7 +51,7 @@
   <div class="layout">
     <form class="settings" id="settings" aria-label="Recipe settings" novalidate>
       <fieldset class="field">
-        <legend><span class="n">01</span> Style</legend>
+        <legend><span class="n">1</span> Style</legend>
         <div class="options">
           <label class="option"><input type="radio" name="style" value="neapolitan" checked><span><span class="option__name">Neapolitan</span><span class="option__desc">Soft, light and airy, with a puffy rim.</span></span></label>
           <label class="option"><input type="radio" name="style" value="ny"><span><span class="option__name">New York</span><span class="option__desc">Crisp, foldable and chewy.</span></span></label>
@@ -57,7 +61,7 @@
       </fieldset>
 
       <div class="field">
-        <label class="legend" for="count"><span class="n">02</span> How many</label>
+        <label class="legend" for="count"><span class="n">2</span> How many</label>
         <div class="stepper">
           <button type="button" id="count-down" aria-label="One fewer" aria-controls="count">−</button>
           <input type="number" id="count" name="count" inputmode="numeric" min="1" max="12" value="2" aria-describedby="count-hint">
@@ -68,7 +72,7 @@
 
       <div class="field">
         <div class="legend legend--split">
-          <label for="hydration"><span class="n">03</span> Hydration</label>
+          <label for="hydration"><span class="n">3</span> Hydration</label>
           <output id="hydration-out" for="hydration">68%</output>
         </div>
         <input type="range" id="hydration" name="hydration" min="55" max="80" step="1" value="68" aria-describedby="hydration-hint">
@@ -76,7 +80,7 @@
       </div>
 
       <fieldset class="field">
-        <legend><span class="n">04</span> Oven</legend>
+        <legend><span class="n">4</span> Oven</legend>
         <div class="options options--2">
           <label class="option"><input type="radio" name="oven" value="home" checked><span><span class="option__name">Home oven</span><span class="option__desc">Up to 260–290°C.</span></span></label>
           <label class="option"><input type="radio" name="oven" value="pizza"><span><span class="option__name">Pizza oven</span><span class="option__desc">400°C and above.</span></span></label>
@@ -84,7 +88,7 @@
       </fieldset>
 
       <fieldset class="field">
-        <legend><span class="n">05</span> Schedule</legend>
+        <legend><span class="n">5</span> Schedule</legend>
         <div class="options options--3">
           <label class="option"><input type="radio" name="time" value="quick" checked><span><span class="option__name">Quick</span><span class="option__desc">2–4 hours</span></span></label>
           <label class="option"><input type="radio" name="time" value="overnight"><span><span class="option__name">Overnight</span><span class="option__desc">12–24 hours</span></span></label>
@@ -94,7 +98,7 @@
       </fieldset>
 
       <fieldset class="field">
-        <legend><span class="n">06</span> Fine-tuning <span class="optional">optional</span></legend>
+        <legend><span class="n">6</span> Fine-tuning <span class="optional">optional</span></legend>
         <div class="inline-field">
           <label for="room-temp">Room temperature</label>
           <div class="with-unit"><input type="number" id="room-temp" name="roomTemp" inputmode="decimal" min="15" max="30" step="1" aria-describedby="room-temp-hint"><span aria-hidden="true">°C</span></div>

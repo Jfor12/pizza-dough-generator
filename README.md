@@ -52,7 +52,7 @@ Everything is stored in the browser only.
 | `method.js` | The step-by-step method for a recipe, in either unit system |
 | `app.js` | Reads the form, renders the recipe, saving, notes, timer and theme |
 | `tests/` | Unit tests for the maths and method |
-| `fonts/` | Newsreader and IBM Plex Mono, self-hosted (SIL Open Font License) |
+| `fonts/` | Fredoka (headings and numbers) and Nunito (text), self-hosted (SIL Open Font License) |
 
 No build step and no dependencies: GitHub Pages serves the files as they are.
 

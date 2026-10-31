@@ -48,7 +48,8 @@ flowchart LR
 It also keeps saved recipes, each with an optional note, runs a dough timer that
 survives closing the tab (every waiting step has its own "Start timer" button), can
 keep the screen awake while you cook, gives every recipe a shareable link, and prints
-just the recipe. Everything is stored in the browser only.
+just the recipe. Everything is stored in the browser only, under keys
+starting with `pizza:` (the other apps on jfor12.github.io share the same storage).
 
 On phones a bar at the bottom jumps between Settings, Recipe, Timer and Saved, a
 running timer floats above it, and changing a setting while the recipe is off-screen

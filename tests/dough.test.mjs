@@ -2,7 +2,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { computeRecipe, normaliseSettings, amount, migrateSaved, toQuery, fromQuery, notesKey, temperatureAdjustment } from '../dough.js';
-import { method } from '../method.js';
+import { method, timeline, totalMinutes, approx, duration } from '../method.js';
 
 const near = (a, b, eps = 0.05) => assert.ok(Math.abs(a - b) < eps, `${a} ≈ ${b}`);
 
@@ -63,7 +63,7 @@ test('settings are clamped and defaulted', () => {
 
 test('saved recipes from the old version are migrated', () => {
   const old = { name: 'Friday', data: { style: 'ny', pizzaCount: 3, hydration: 63, oven: 'pizza', time: 'overnight', flour: 510 }, savedAt: '2025-08-01T10:00:00Z' };
-  assert.deepEqual(migrateSaved(old), { name: 'Friday', settings: { style: 'ny', count: 3, hydration: 63, oven: 'pizza', time: 'overnight', roomTemp: null, poolish: false }, savedAt: '2025-08-01T10:00:00Z' });
+  assert.deepEqual(migrateSaved(old), { name: 'Friday', settings: { style: 'ny', count: 3, hydration: 63, oven: 'pizza', time: 'overnight', roomTemp: null, poolish: false }, note: '', savedAt: '2025-08-01T10:00:00Z' });
   assert.equal(migrateSaved(null), null);
 });
 
@@ -89,4 +89,43 @@ test('every combination produces a complete method with no unfilled values', () 
             assert.ok(steps.length >= 5);
             for (const st of steps) assert.doesNotMatch(st.text + st.title, /undefined|NaN|null|\$\{/);
           }
+});
+
+test('schedule length is worked out from the method steps, start to oven', () => {
+  const total = s => totalMinutes(method(computeRecipe(s), 'metric'));
+  // Quick: weigh 10 + mix and rest 25 + knead 10 + rise 150 + ball 10 + proof 45 = 250 minutes.
+  assert.equal(total({ time: 'quick' }), 250);
+  assert.equal(approx(total({ time: 'quick' })), 'about 4 hours');
+  assert.equal(approx(total({ time: 'overnight' })), 'about 20 hours');
+  assert.equal(approx(total({ time: 'long' })), 'about 2 days');
+  // A poolish adds 12–16 hours up front; a warm room shortens the quick rise.
+  assert.ok(total({ time: 'quick', poolish: true }) - total({ time: 'quick' }) === 14 * 60);
+  assert.ok(total({ time: 'quick', roomTemp: 27 }) < total({ time: 'quick' }));
+  assert.equal(approx(270), 'about 4½ hours');
+  assert.equal(approx(270, { short: true }), 'about 4½ h');
+});
+
+test('timeline counts back from the bake; the preheat overlaps the proof', () => {
+  const steps = method(computeRecipe({ time: 'quick', oven: 'home', style: 'neapolitan' }), 'metric');
+  const plan = timeline(steps);
+  const bake = steps.findIndex(s => s.id === 'bake');
+  assert.equal(plan[0].before, totalMinutes(steps));
+  assert.equal(plan[bake].before, 0);
+  assert.equal(steps[bake].preheat, 60);
+  assert.ok(steps.filter(s => s.timer).map(s => s.timer.name).join() === 'rest,first-rise,proof,preheat');
+  assert.equal(duration(150), '2 h 30 min');
+  assert.equal(duration(2880), '2 days');
+});
+
+test('every step leads with its action and the explanation is separate', () => {
+  for (const time of ['quick', 'overnight', 'long']) for (const style of ['neapolitan', 'ny', 'detroit', 'roman']) {
+    for (const step of method(computeRecipe({ style, time, poolish: true, hydration: 75 }), 'metric')) {
+      assert.match(step.text, /^<strong class="lead">/, `${style}/${time}/${step.id}`);
+      assert.equal(typeof step.why, 'string');
+    }
+  }
+});
+
+test('saved recipes keep their note', () => {
+  assert.equal(migrateSaved({ name: 'A', settings: { style: 'ny' }, note: 'Try 70%' }).note, 'Try 70%');
 });

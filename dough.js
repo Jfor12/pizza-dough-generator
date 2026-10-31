@@ -1,18 +1,20 @@
 // Recipe engine: pure functions, no DOM. Everything the page shows is derived
 // from `computeRecipe(settings)` and rendered by app.js.
 
+// hydration: the usual value; range: the hydrations that work well for the style (marked on the slider).
 export const STYLES = {
-  neapolitan: { hydration: 68, flourPerPizza: 155, saltPercent: 2.8, flour: "'00' flour (or bread flour)" },
-  ny: { hydration: 62, flourPerPizza: 170, saltPercent: 2.5, flour: 'bread flour' },
-  detroit: { hydration: 72, flourPerPizza: 180, saltPercent: 2.2, flour: 'bread flour' },
-  roman: { hydration: 80, flourPerPizza: 333, saltPercent: 2.5, flour: "'00' flour (or bread flour)" },
+  neapolitan: { hydration: 68, range: [62, 70], flourPerPizza: 155, saltPercent: 2.8, flour: "'00' flour (or bread flour)" },
+  ny: { hydration: 62, range: [58, 65], flourPerPizza: 170, saltPercent: 2.5, flour: 'bread flour' },
+  detroit: { hydration: 72, range: [68, 75], flourPerPizza: 180, saltPercent: 2.2, flour: 'bread flour' },
+  roman: { hydration: 80, range: [75, 80], flourPerPizza: 333, saltPercent: 2.5, flour: "'00' flour (or bread flour)" },
 };
 
 // Instant yeast as a share of flour weight, before the room-temperature adjustment.
+// How long each schedule takes is worked out from the method's steps (method.js), not stored here.
 export const SCHEDULES = {
-  quick: { yeastPercent: 1, label: 'Quick', span: '2–4 hours', riseMinutes: 150 },
-  overnight: { yeastPercent: 0.4, label: 'Overnight', span: '12–24 hours', riseMinutes: 16 * 60 },
-  long: { yeastPercent: 0.2, label: 'Long', span: '2–3 days', riseMinutes: 48 * 60 },
+  quick: { yeastPercent: 1, label: 'Quick' },
+  overnight: { yeastPercent: 0.4, label: 'Overnight' },
+  long: { yeastPercent: 0.2, label: 'Long' },
 };
 
 export const OVENS = ['home', 'pizza'];
@@ -122,12 +124,14 @@ export const legacyNotesKey = s => `${s.style}-${s.count}-${s.hydration}`;
 // Saved recipes from the old version stored `{ name, data: { style, pizzaCount, … }, savedAt }`.
 export function migrateSaved(entry) {
   if (!entry || typeof entry !== 'object') return null;
-  if (entry.settings) return { name: String(entry.name || 'Saved recipe'), settings: normaliseSettings(entry.settings), savedAt: entry.savedAt || null };
+  const note = typeof entry.note === 'string' ? entry.note : '';
+  if (entry.settings) return { name: String(entry.name || 'Saved recipe'), settings: normaliseSettings(entry.settings), note, savedAt: entry.savedAt || null };
   if (entry.data) {
     const d = entry.data;
     return {
       name: String(entry.name || 'Saved recipe'),
       settings: normaliseSettings({ style: d.style, count: d.pizzaCount, hydration: d.hydration, oven: d.oven, time: d.time }),
+      note,
       savedAt: entry.savedAt || null,
     };
   }

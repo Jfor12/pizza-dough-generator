@@ -20,7 +20,7 @@
 <link rel="stylesheet" href="styles.css">
 <script>
   // Apply a saved theme before first paint to avoid a flash.
-  try { const t = localStorage.getItem('theme'); if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t; } catch {}
+  try { const t = localStorage.getItem('pizza:theme') ?? localStorage.getItem('theme'); if (t === 'dark' || t === 'light') document.documentElement.dataset.theme = t; } catch {}
 </script>
 <script type="module" src="app.js"></script>
 </head>

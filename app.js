@@ -10,11 +10,23 @@ const $ = sel => document.querySelector(sel);
 const form = $('#settings');
 
 // localStorage can throw (private mode, blocked storage); never let that break the page.
+// Keys start with "pizza:", since every app on jfor12.github.io shares one storage area (31 Oct 2026). A value
+// saved under the old, unprefixed key is copied across the first time it's read; the old key is left as it was.
+const PREFIX = 'pizza:';
+const scoped = key => {
+  try {
+    if (localStorage.getItem(PREFIX + key) === null) {
+      const old = localStorage.getItem(key);
+      if (old !== null) localStorage.setItem(PREFIX + key, old);
+    }
+  } catch {}
+  return PREFIX + key;
+};
 const store = {
-  get(key, fallback) { try { const v = localStorage.getItem(key); return v === null ? fallback : JSON.parse(v); } catch { return fallback; } },
-  getRaw(key) { try { return localStorage.getItem(key); } catch { return null; } },
-  set(key, value) { try { localStorage.setItem(key, typeof value === 'string' ? value : JSON.stringify(value)); return true; } catch { return false; } },
-  remove(key) { try { localStorage.removeItem(key); } catch {} },
+  get(key, fallback) { try { const v = localStorage.getItem(scoped(key)); return v === null ? fallback : JSON.parse(v); } catch { return fallback; } },
+  getRaw(key) { try { return localStorage.getItem(scoped(key)); } catch { return null; } },
+  set(key, value) { try { localStorage.setItem(PREFIX + key, typeof value === 'string' ? value : JSON.stringify(value)); return true; } catch { return false; } },
+  remove(key) { try { localStorage.removeItem(PREFIX + key); } catch {} },
 };
 
 const STYLE_NAMES = { neapolitan: 'Neapolitan', ny: 'New York', detroit: 'Detroit', roman: 'Roman' };
@@ -545,7 +557,8 @@ function arrange() {
   const timer = $('#timer');
   const saved = $('#saved-section');
   const focused = document.activeElement;
-  if (wide.matches && timer.parentElement !== side) side.append(timer, saved);
+  // The timer goes at the top of the column, so it's in view while the recipe scrolls; saved recipes at the end.
+  if (wide.matches && timer.parentElement !== side) { side.prepend(timer); side.append(saved); }
   if (!wide.matches && timer.parentElement === side) recipe.after(timer, saved);
   if (focused && focused !== document.activeElement && document.contains(focused)) focused.focus({ preventScroll: true });
 }

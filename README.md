@@ -15,7 +15,7 @@ flowchart LR
     C --> D[Formula table<br>grams or cups, baker's %]
     C --> E[method<br>steps for style, oven, schedule]
     B <--> F[URL query<br>shareable recipe links]
-    B <--> G[localStorage<br>saved recipes, notes, timer]
+    B <--> G[localStorage<br>saved recipes with notes, timer]
 ```
 
 - **Baker's maths.** Every ingredient is a percentage of the flour weight, so the
@@ -28,8 +28,15 @@ flowchart LR
   | Detroit | 180 g | 72% | 2.2% |
   | Roman (40×30 cm tray) | 333 g | 80% | 2.5% |
 
-- **Schedules.** Instant yeast is 1% of the flour for a quick 2–4 hour rise, 0.4%
+- **Schedules.** Instant yeast is 1% of the flour for a quick same-day rise, 0.4%
   overnight and 0.2% for a 2–3 day cold ferment.
+- **How long it takes.** Each method step has a typical duration (`DURATIONS` in
+  `method.js`). Their sum is the time from starting to the first pizza going in the
+  oven, shown on the schedule buttons and above the method (quick: about 4 hours;
+  overnight: about 20; long: about 2 days; a poolish adds 14). The oven preheat
+  overlaps the proof, so it doesn't add to the total.
+- **Ready by.** Pick when you want to bake and every step shows its clock time,
+  counted back from that moment.
 - **Room temperature.** Yeast goes down 5% per degree above 22°C and up 5% per
   degree below it, capped at ±50%. The rise step says whether to expect it to
   take longer or shorter.
@@ -38,9 +45,15 @@ flowchart LR
 - **Units.** Grams, or cups, ounces and teaspoons (flour at 125 g per cup, water
   at 237 g per cup), with grams always shown alongside.
 
-It also keeps saved recipes and per-recipe notes, runs a dough timer that survives
-closing the tab, gives every recipe a shareable link, and prints just the recipe.
-Everything is stored in the browser only.
+It also keeps saved recipes, each with an optional note, runs a dough timer that
+survives closing the tab (every waiting step has its own "Start timer" button), can
+keep the screen awake while you cook, gives every recipe a shareable link, and prints
+just the recipe. Everything is stored in the browser only.
+
+On phones a bar at the bottom jumps between Settings, Recipe, Timer and Saved, a
+running timer floats above it, and changing a setting while the recipe is off-screen
+shows a short summary of what changed. On wide screens the settings, timer and saved
+recipes share one column that stays in view.
 
 ## Files
 
@@ -50,7 +63,7 @@ Everything is stored in the browser only.
 | `styles.css` | All styles: light and dark themes, print layout |
 | `dough.js` | The recipe maths: pure functions, no DOM |
 | `method.js` | The step-by-step method for a recipe, in either unit system |
-| `app.js` | Reads the form, renders the recipe, saving, notes, timer and theme |
+| `app.js` | Reads the form, renders the recipe, saving, the timer, the planner and theme |
 | `tests/` | Unit tests for the maths and method |
 | `fonts/` | Fredoka (headings and numbers) and Nunito (text), self-hosted (SIL Open Font License) |
 
